@@ -1,0 +1,202 @@
+// Gram settings
+//
+// For information on how to configure Gram, see the Gram
+// documentation: gram://docs/configuring-gram
+//
+// To see all of Gram's default settings without changing your
+// custom settings, run `gram: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "prettier": {
+  "allowed": false
+ },
+ "smooth_scroll": {
+  "enabled": false
+ },
+ "format_on_save": "off",
+ "use_system_path_prompts": true,
+ "use_system_prompts": false,
+ "node": {
+    "allow_binary_download": false,
+  },
+  "lsp": {
+    "wolfram-lsp": {
+   "binary": {
+    "allow_binary_download": false
+   },
+   "enable_lsp_tasks": true
+  },
+  "rust-analyzer": {
+   "binary": {
+    "allow_binary_download": true
+   },
+   "enable_lsp_tasks": true
+  },
+  "bash-language-server": {
+      "binary": {
+        "allow_binary_download": false,
+      },
+      "enable_lsp_tasks": true,
+    },
+    "package-version-server": {
+      "binary": {
+        "allow_binary_download": false,
+      },
+      "enable_lsp_tasks": true,
+    },
+    "json-language-server": {
+      "binary": {
+        "allow_binary_download": true,
+      },
+      "enable_lsp_tasks": true,
+    },
+  },
+  "diagnostics": {
+    "button": true,
+  },
+  "status_bar": {
+    "active_encoding_button": "non_utf8",
+    "active_file": false,
+    "icon_size": "large",
+    "position": "bottom",
+    "show": true,
+  },
+  "hover_popover_delay": 400,
+  "show_completions_on_input": true,
+  "current_line_highlight": "none",
+  "icon_theme": {
+    "mode": "dark",
+    "light": "Gram (Default)",
+    "dark": "Gram (Default)",
+  },
+  "diagnostics_max_severity": "hint",
+  "close_on_file_delete": true,
+  "file_finder": {
+    "file_icons": false,
+  },
+  "tab_bar": {
+    "show_tab_bar_buttons": false,
+    "show_nav_history_buttons": false,
+  },
+  "title_bar": {
+    "show_menus": true,
+    "show_user_picture": false,
+    "show_onboarding_banner": false,
+    "show_project_items": false,
+    "show_branch_name": true,
+  },
+  "git": {
+    "inline_blame": {
+      "enabled": false,
+    },
+    "git_gutter": "hide",
+  },
+  "proxy": "",
+  "toolbar": {
+    "selections_menu": true,
+    "quick_actions": false,
+    "breadcrumbs": false,
+  },
+  "scrollbar": {
+    "selected_symbol": false,
+  "axes": {
+      "horizontal": false,
+    },
+    "git_diff": false,
+  },
+  "inline_code_actions": false,
+  "gutter": {
+    "folds": false,
+  },
+  "show_signature_help_after_edits": true,
+  "ui_font_family": "Iosevka Nerd Font Mono",
+  "terminal": {
+    "font_family": "Iosevka Nerd Font Mono",
+    "toolbar": {
+      "breadcrumbs": false,
+    },
+    "default_height": 800.0,
+    "font_size": 20.0,
+    "cursor_shape": "bar",
+    "blinking": "on",
+  },
+  "project_panel": {
+    "button": true,
+    "indent_guides": {
+      "show": "never",
+    },
+    "sticky_scroll": false,
+    "starts_open": false,
+    "auto_reveal_entries": false,
+    "indent_size": 20.0,
+    "folder_icons": false,
+    "git_status": false,
+    "auto_fold_dirs": false,
+    "show_diagnostics": "all",
+    "sort_mode": "mixed",
+  },
+  "outline_panel": {
+    "file_icons": false,
+    "auto_fold_dirs": false,
+    "auto_reveal_entries": false,
+    "git_status": false,
+  },
+  "base_keymap": "VSCode",
+  "tabs": {
+    "file_icons": true,
+    "git_status": false,
+  },
+  "search": {
+    "button": false,
+    "center_on_match": true,
+    "include_ignored": true,
+  },
+  "sticky_scroll": {
+    "enabled": false,
+  },
+  "minimap": {
+    "show": "never",
+  },
+  "buffer_font_fallbacks": [
+    "Iosevka Nerd Font Mono",
+    "ZedMono Nerd Font Mono",
+    "Reddit Mono",
+    "TT2020 Style E",
+    "Code Saver",
+    "Input Mono Condensed",
+    "Lilex Nerd Font Mono",
+    "InconsolataGo Nerd Font Mono",
+    "Maple Mono",
+    "JetBrainsMono Nerd Font Mono",
+    "VictorMono Nerd Font Mono"
+  ],
+  "buffer_font_family": "Iosevka Nerd Font Mono",
+  "colorize_brackets": false,
+  "show_whitespaces": "all",
+  "soft_wrap": "editor_width",
+  "hard_tabs": false,
+  "ui_font_size": 19.0,
+  "buffer_font_size": 20.0,
+  "theme": {
+    "mode": "dark",
+    "light": "One Light",
+    "dark": "Gruber Darker",
+  },
+  "languages": {
+    "Markdown": {
+      "show_completions_on_input": false,
+      "show_whitespaces": "selection",
+    },
+    "LaTeX": {
+      "show_whitespaces": "selection",
+      "show_completions_on_input": false,
+    },
+    "Fortran (Fixed Form)": {
+      "soft_wrap": "preferred_line_length",
+      "show_wrap_guides": true,
+      "preferred_line_length": 73,
+      "hard_tabs": false,
+      "tab_size": 6,
+    },
+  },
+}

@@ -1,0 +1,16 @@
+font-family = Iosevka Nerd Font Mono
+font-size = 21
+theme = gruber_darker_ghostty
+
+window-padding-x = 8
+window-padding-y = 0
+
+# background-opacity = 1
+
+macos-titlebar-style = tabs
+
+# shell-integration = detect
+
+adjust-cursor-thickness = 2
+
+split-divider-color = #453d41

@@ -1,0 +1,157 @@
+// I literally was like most of you guys, a dotfiles scavenger, and got this
+// config from https://github.com/waytoabv/Dotfiles/blob/main/.config/fastfetch/config.jsonc
+// So the credit belongs to "waytoabv"
+//
+// kitten icat ~/github/dotfiles-latest/fastfetch/images/link-green.webp
+
+{
+	"$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+	"logo": {
+		// If working with tmux, you need to use kitty-icat instead of kitty-direct
+		// https://discord.com/channels/1005603569187160125/1324828708128821271/1327261766014599218
+		// "type": "kitty",
+		// "type": "kitty-direct",
+		// "source": "~/.config/fastfetch/images/star-saber-ship-linkarzu.png",
+		// "source": "~/.config/fastfetch/images/link-green.png",
+		"source": "OSX_small",
+		// "height": 13,
+		"position": "left",
+		"padding": {
+			"top": 1,
+			"right": 1
+		}
+	},
+	"display": {
+		"separator": " "
+	},
+	"modules": [
+		// "break",
+		{
+			"type": "custom",
+			"format": "┌───────────────Hardware───────────────┐",
+			"outputColor": "cyan"
+		},
+		{
+			"type": "host",
+			"key": "  host",
+			"keyColor": "red"
+		},
+		{
+			"type": "cpu",
+			"key": "│ ├  CPU",
+			"keyColor": "red"
+		},
+		{
+			"type": "gpu",
+			"key": "│ ├󰾲  GPU",
+			"keyColor": "red"
+		},
+		{
+			"type": "disk",
+			"key": "│ ├  disk",
+			"folders": "/",
+			"format": "{size-used} / {size-total} ({size-percentage})",
+			"keyColor": "red"
+		},
+		// {
+			// "type": "swap",
+			// "key": "│ ├swap",
+			// "keyColor": "red"
+		// },
+		{
+			"type": "display",
+			"key": "│ ├󰍹  disp",
+			"keyColor": "red",
+			"format": "{name} {width}x{height} @ {refresh-rate} Hz"
+		},
+		{
+			"type": "memory",
+			"key": "└ └  RAM",
+			"keyColor": "red"
+		},
+		{
+			"type": "custom",
+			"format": "└──────────────────────────────────────┘",
+			"outputColor": "cyan"
+		},
+		{
+			"type": "custom",
+			"format": "┌───────────────Software───────────────┐",
+			"outputColor": "cyan"
+		},
+		{
+			"type": "os",
+			"key": "  OS",
+			"keyColor": "green"
+		},
+		{
+			"type": "kernel",
+			"key": "│ ├  kern",
+			"keyColor": "green"
+		},
+		{
+			"type": "packages",
+			"key": "│ ├󰏖  pkg",
+			"keyColor": "green"
+		},
+		// {
+			// "type": "command",
+			// "key": "│ ├󰏖 ",
+			// "keyColor": "green",
+			// "text": "brew list | wc -l | tr -d ' '"
+		// },
+		{
+			"type": "shell",
+			"key": "└ └  sh",
+			"keyColor": "green"
+		},
+		{
+			"key": "  DE",
+			"keyColor": "blue",
+			"type": "command",
+			"text": "echo Aqua"
+		},
+		{
+			"type": "wm",
+			"key": "│ ├󰕮  WM",
+			"keyColor": "blue"
+		},
+		{
+			"type": "terminal",
+			"key": "└ ├  term",
+			"keyColor": "blue"
+		},
+		// {
+		// 	"type": "terminalfont",
+		// 	"key": "└ └  terminalfont",
+		// 	"keyColor": "blue"
+		// },
+		{
+			"type": "custom",
+			"format": "└──────────────────────────────────────┘",
+			"outputColor": "cyan"
+		},
+		{
+			"type": "custom",
+			// "format": "┌───────────Uptime / Age───────────┐",
+			"format": "┌────────────────Uptime────────────────┐",
+			"outputColor": "cyan"
+		},
+		// {
+		//   "type": "command",
+		//   "key": "  OS Age",
+		//   "keyColor": "magenta",
+		//   "text": "birth_install=$(stat -c %W /); current=$(date +%s); time_progression=$((current - birth_install)); days_difference=$((time_progression / 86400)); echo $days_difference days",
+		// },
+		{
+			"type": "uptime",
+			"key": " Uptime",
+			"keyColor": "magenta"
+		},
+		{
+			"type": "custom",
+			"format": "└──────────────────────────────────────┘",
+			"outputColor": "cyan"
+		}
+	]
+}

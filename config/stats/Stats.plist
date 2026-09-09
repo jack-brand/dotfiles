@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BAT_mini_alignment</key>
+	<string>left</string>
+	<key>BAT_mini_color</key>
+	<string>monochrome</string>
+	<key>BAT_mini_label</key>
+	<false/>
+	<key>Battery_barChart_position</key>
+	<integer>3</integer>
+	<key>Battery_batteryDetails_position</key>
+	<integer>2</integer>
+	<key>Battery_battery_additional</key>
+	<string>none</string>
+	<key>Battery_battery_chargerInside</key>
+	<true/>
+	<key>Battery_battery_color</key>
+	<false/>
+	<key>Battery_battery_hideAdditionalWhenFull</key>
+	<false/>
+	<key>Battery_battery_position</key>
+	<integer>1</integer>
+	<key>Battery_battery_xlSize</key>
+	<false/>
+	<key>Battery_label_position</key>
+	<integer>4</integer>
+	<key>Battery_mini_position</key>
+	<integer>0</integer>
+	<key>Battery_notifications_high</key>
+	<string></string>
+	<key>Battery_notifications_low</key>
+	<string>low</string>
+	<key>Battery_oneView</key>
+	<true/>
+	<key>Battery_processes</key>
+	<integer>10</integer>
+	<key>Battery_timeFormat</key>
+	<string>short</string>
+	<key>Battery_widget</key>
+	<string>battery,mini</string>
+	<key>CPU_mini_alignment</key>
+	<string>left</string>
+	<key>CPU_mini_label</key>
+	<true/>
+	<key>CPU_processes</key>
+	<integer>10</integer>
+	<key>CPU_updateInterval</key>
+	<integer>2</integer>
+	<key>CPU_updateTopInterval</key>
+	<integer>2</integer>
+	<key>Disk_mainColor</key>
+	<string>system</string>
+	<key>Disk_processes</key>
+	<integer>10</integer>
+	<key>Disk_removable</key>
+	<true/>
+	<key>Disk_updateInterval</key>
+	<integer>5</integer>
+	<key>F04854BE-F309-447A-BBF8-4C5233029EDC_details</key>
+	<false/>
+	<key>GPU_state</key>
+	<true/>
+	<key>GPU_updateInterval</key>
+	<integer>5</integer>
+	<key>LaunchAtLoginNext</key>
+	<true/>
+	<key>NSNavPanelExpandedSizeForSaveMode</key>
+	<string>{880, 448}</string>
+	<key>NSStatusItem Preferred Position Battery</key>
+	<real>258</real>
+	<key>NSStatusItem Preferred Position CPU_mini</key>
+	<real>639</real>
+	<key>NSStatusItem Preferred Position Disk_mini</key>
+	<real>545</real>
+	<key>NSStatusItem Preferred Position GPU_mini</key>
+	<real>592</real>
+	<key>NSStatusItem Preferred Position Network_speed</key>
+	<real>342</real>
+	<key>NSStatusItem Preferred Position RAM_mini</key>
+	<real>498</real>
+	<key>NSStatusItem Restore Position Battery_battery</key>
+	<integer>261</integer>
+	<key>NSToolbar Configuration eu.exelban.Stats.Settings.Toolbar</key>
+	<dict>
+		<key>TB Display Mode</key>
+		<integer>1</integer>
+		<key>TB Icon Size Mode</key>
+		<integer>1</integer>
+		<key>TB Is Shown</key>
+		<integer>1</integer>
+		<key>TB Size Mode</key>
+		<integer>1</integer>
+	</dict>
+	<key>NSWindow Frame eu.exelban.Stats.Settings.WindowFrame</key>
+	<string>0 0 1440 869 0 0 1440 869 </string>
+	<key>Network_emojiCC</key>
+	<false/>
+	<key>Network_interfaceDetails</key>
+	<false/>
+	<key>Network_processes</key>
+	<integer>10</integer>
+	<key>Network_speed_icon</key>
+	<string>arrows</string>
+	<key>Network_speed_iconAlignment</key>
+	<string>left</string>
+	<key>Network_speed_iconColor</key>
+	<string>default</string>
+	<key>Network_speed_mode</key>
+	<string>twoRows</string>
+	<key>Network_speed_monochrome</key>
+	<false/>
+	<key>Network_speed_units</key>
+	<true/>
+	<key>Network_speed_valueAlignment</key>
+	<string>center</string>
+	<key>Network_speed_valueColor</key>
+	<string>none</string>
+	<key>Network_state</key>
+	<true/>
+	<key>Network_updateICMPInterval</key>
+	<integer>2</integer>
+	<key>RAM_combinedProcesses</key>
+	<true/>
+	<key>RAM_processes</key>
+	<integer>10</integer>
+	<key>RAM_updateInterval</key>
+	<integer>2</integer>
+	<key>RAM_updateTopInterval</key>
+	<integer>2</integer>
+	<key>disk4s1_details</key>
+	<false/>
+	<key>remote_tokens_migrated_to_keychain</key>
+	<true/>
+	<key>runAtLoginInitialized</key>
+	<true/>
+	<key>setupProcess</key>
+	<true/>
+	<key>support_ts</key>
+	<integer>1785308318</integer>
+	<key>telemetry</key>
+	<false/>
+	<key>updater_check_ts</key>
+	<integer>1787662920</integer>
+	<key>updater_install_ts</key>
+	<integer>1787571101</integer>
+	<key>version</key>
+	<string>3.0.13</string>
+</dict>
+</plist>

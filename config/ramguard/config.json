@@ -1,0 +1,1 @@
+{"aiEnabled":false,"ollamaURL":"http:\/\/localhost:11434","menuBarCPU":true,"menuBarBattery":false,"displayMode":"usedTotal","groupHelpers":true,"menuBarRAM":true,"menuBarSSD":true,"menuBarNet":true,"alert80":false,"alertThreshold":80,"showNotifications":true,"showCPU":true,"showThreads":false,"aiModel":"gemma3","aiAutoKill":false,"refreshInterval":2,"maxProcesses":25}
