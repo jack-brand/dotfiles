@@ -1,0 +1,139 @@
+# Environment
+
+export PAGER="less"
+export MANPAGER="less"
+export VISUAL="vim"
+export LESS="-R -F -X"
+
+export LESS_TERMCAP_mb=$'\e[1;31m'
+export LESS_TERMCAP_md=$'\e[1;31m'
+export LESS_TERMCAP_me=$'\e[0m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_so=$'\e[1;33;44m'
+export LESS_TERMCAP_ue=$'\e[0m'
+export LESS_TERMCAP_us=$'\e[4;1;32m'
+export LESS_TERMCAP_mr=$'\e[7m'
+export LESS_TERMCAP_mh=$'\e[2m'
+export LESS_TERMCAP_ZN=$'\e[74m'
+export LESS_TERMCAP_ZV=$'\e[75m'
+export LESS_TERMCAP_ZO=$'\e[73m'
+export LESS_TERMCAP_ZW=$'\e[75m'
+
+export BAT_PAGER="less -R"
+
+export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*"'
+# export FZF_DEFAULT_OPTS="--preview 'bat --style=numbers --color=always {}'"
+
+# Zsh
+
+unsetopt correct_all
+setopt interactivecomments
+setopt prompt_subst
+setopt EXTENDED_GLOB
+setopt globdots
+
+autoload -Uz colors zmv
+colors
+
+# autoload -Uz add-zsh-hook
+
+# Completion
+
+autoload -Uz compinit
+compinit
+
+zstyle ":completion:*" menu no
+
+# Plugins
+
+ZSH_PLUGIN_DIR="$HOME/.config/zsh/plugins"
+
+source "$ZSH_PLUGIN_DIR/fzf-tab/fzf-tab.zsh"
+source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "$ZSH_PLUGIN_DIR//zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
+
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243"
+
+HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
+HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND=(bg=8)
+HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND=(bg=1)
+
+# History
+
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=5000
+SAVEHIST=5000
+
+setopt sharehistory
+setopt histignorealldups
+
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+
+# Prompt
+
+VIRTUAL_ENV_DISABLE_PROMPT=1
+
+PS1=$'\n'
+PS1+='${VIRTUAL_ENV:+($(basename "$VIRTUAL_ENV")) }'
+PS1+='[%~]'
+PS1+=$'\n'
+PS1+='%F{green}%%%f '
+
+# External tools
+
+if command -v zoxide &>/dev/null; then
+    zoxide() {
+        unfunction zoxide
+        eval "$(command zoxide init zsh)"
+        command zoxide "$@"
+    }
+fi
+
+if command -v direnv &>/dev/null; then
+    eval "$(direnv hook zsh)"
+fi
+
+# Aliases
+
+if command -v eza &>/dev/null; then
+    alias ls="eza -al --no-user --changed --git"
+    alias tree="eza --tree"
+fi
+
+if command -v bat &>/dev/null; then
+    alias help="bat --language=help --style=plain"
+fi
+
+copy() {
+    if command -v pbcopy &>/dev/null; then
+        pbcopy
+    elif command -v xclip &>/dev/null; then
+        xclip -selection clipboard
+    elif command -v xsel &>/dev/null; then
+        xsel --clipboard --input
+    elif command -v wl-copy &>/dev/null; then
+        wl-copy
+    fi
+}
+
+if command -v fastfetch &>/dev/null; then
+    palette() { fastfetch --structure colors --logo none }
+fi
+
+diff() {
+    local red=$(tput setaf 1 2>/dev/null)
+    local green=$(tput setaf 2 2>/dev/null)
+    local cyan=$(tput setaf 6 2>/dev/null)
+    local reset=$(tput sgr0 2>/dev/null)
+
+    command diff -u "$@" | awk "
+      /^\-/ { printf \"%s\", \"$red\" }
+      /^\+/ { printf \"%s\", \"$green\" }
+      /^@/ { printf \"%s\", \"$cyan\" }
+      { print \$0 \"$reset\" }
+    "
+
+    return "${PIPESTATUS[0]}"
+}

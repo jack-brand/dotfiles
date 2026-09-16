@@ -1,0 +1,10 @@
+client_id: fed36292f3fc4c14bdf9cb6f9f94c716
+fallback_client_id: d420a117a32841c2b3474932e49fb54b
+client_secret: ''
+setup_version: 2
+device_id: 92908c1a-5a6b-48df-b334-d51b69e02ba3
+port: 8989
+enable_streaming: true
+streaming_device_name: spotatui
+streaming_bitrate: 320
+streaming_audio_cache: false

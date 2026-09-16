@@ -165,11 +165,7 @@ diff() {
 # }
 
 # Copy stdin to the clipboard
-copy() {
-    pbcopy 2>/dev/null ||
-        xsel 2>/dev/null ||
-        clip.exe
-}
+copy() { pbcopy 2>/dev/null || xsel 2>/dev/null || clip.exe }
 
 # Print colour palette
 palette() {

@@ -1,13 +1,16 @@
 " .vimrc
 " Author: Jack Brand <74jdvb@gmail.com> <https://github.com/jack-brand>
 " License: MIT
-" Credit: https://github.com/tonybanters/vim, https://shapeshed.com/vim-statuslines/
+" Credit: <https://github.com/tonybanters/vim> <https://shapeshed.com/vim-statuslines/>
 
 
 " Options
 
 set number
 set relativenumber
+set ignorecase
+set smartcase
+set clipboard=unnamedplus
 set expandtab
 set shiftwidth=4
 set softtabstop=4
@@ -40,6 +43,8 @@ let &t_SR = "\<Esc>[4 q"
 let &t_EI = "\<Esc>[2 q"
 
 let g:tex_conceal = ''
+
+set clipboard=unnamed,unnamedplus
 
 " Plugins
 
@@ -138,18 +143,18 @@ let s:lspServers = [
         \ path: 'citation-langserver',
         \ args: []
     \ },
-\ #{
-    \ name: 'wolfram',
-    \ filetype: ['mma'],
-    \ path: '/Applications/Wolfram.app/Contents/MacOS/WolframKernel',
-    \ args: [
-        \ '-noinit',
-        \ '-noprompt',
-        \ '-nopaclet',
-        \ '-nostartuppaclets',
-        \ '-noicon',
-        \ '-run',
-        \ 'Needs["LSPServer`"];LSPServer`StartServer[]'
+    \ #{
+        \ name: 'wolfram',
+        \ filetype: ['mma'],
+        \ path: 'WolframKernel',
+        \ args: [
+            \ '-noinit',
+            \ '-noprompt',
+            \ '-nopaclet',
+            \ '-nostartuppaclets',
+            \ '-noicon',
+            \ '-run',
+            \ 'Needs["LSPServer`"];LSPServer`StartServer[]'
         \ ]
     \ }
 \ ]
@@ -173,11 +178,14 @@ autocmd User LspSetup call LspOptionsSet(s:lspOpts)
 
 let mapleader = " "
 
+" Copy entire buffer
+nnoremap ya :%y
+
 " Search current directory in a fzf menu
 nnoremap <leader>p :Files<CR>
 
 " Ripgrep search current directory in a fzf menu
-nnoremap <leader>:rg :Rg<Space>
+nnoremap <leader>rg :Rg<Space>
 
 " Lsp
 nnoremap gd :LspGotoDefinition<CR>
