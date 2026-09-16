@@ -1,5 +1,7 @@
 # Environment
 
+export ZDOTDIR="$HOME/.zsh"
+
 export PAGER="less"
 export MANPAGER="less"
 export VISUAL="vim"
@@ -46,12 +48,12 @@ zstyle ":completion:*" menu no
 
 # Plugins
 
-ZSH_PLUGIN_DIR="$HOME/.config/zsh/plugins"
+ZPLUGDIR="$ZDOTDIR/plugins"
 
-source "$ZSH_PLUGIN_DIR/fzf-tab/fzf-tab.zsh"
-source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
-source "$ZSH_PLUGIN_DIR//zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
+source "$ZPLUGDIR/fzf-tab/fzf-tab.zsh"
+source "$ZPLUGDIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "$ZPLUGDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "$ZPLUGDIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243"
 
@@ -61,7 +63,7 @@ HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND=(bg=1)
 
 # History
 
-HISTFILE=$HOME/.zsh_history
+HISTFILE="$ZDOTDIR/history"
 HISTSIZE=5000
 SAVEHIST=5000
 

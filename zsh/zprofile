@@ -28,7 +28,37 @@ if [[ -d "$HOME/hep/lhapdf" ]]; then
     fi
 fi
 
-if [[ -f "$HOME/.zprofile.local" ]]; then
-    source "$HOME/.zprofile.local"
+if [[ "$(uname)" == "Darwin" ]]; then
+    ARCH="$(uname -m)" 
+    
+    if [[ "$ARCH" == "arm64" ]]; then
+        BREWDIR="/opt/homebrew"
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        BREWDIR="/usr/local"
+    else
+        echo "ERROR: ${(%):-%N} :: \`uname -m\` is neither arm64 nor x86_64"
+        exit 1
+    fi
+
+    if [[ -d "$BREWDIR" ]]; then
+        if [[ -d "$BREWDIR/bin" ]]; then
+            export PATH="$BREWDIR/bin:$PATH"
+
+            if [[ -x "$BREWDIR/bin/brew" ]]; then
+                eval "$("$BREWDIR/bin/brew" shellenv)"
+            fi
+        fi
+
+        fpath=(
+            "$BREWDIR/share/zsh/functions"
+            "$BREWDIR/share/zsh/site-functions"
+            $fpath
+        )
+        export HOMEBREW_NO_AUTO_UPDATE=1
+    fi
+
+    if [[ -d "/Applications/Wolfram.app/Contents/MacOS" ]]; then
+        export PATH="$PATH:/Applications/Wolfram.app/Contents/MacOS"
+    fi
 fi
 

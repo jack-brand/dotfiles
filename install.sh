@@ -47,24 +47,24 @@ done
 
 # zsh
 
-replace "$SCRIPT_DIR/zsh/zshrc" "$HOME/.zshrc"
-replace "$SCRIPT_DIR/zsh/zprofile" "$HOME/.zprofile"
+ZDOTDIR="$HOME/.zsh"
+mkdir -p "$ZDOTDIR"
+mkdir -p "$ZDOTDIR/plugins"
 
-if [[ "$(uname)" == "Darwin" ]]; then
-    replace "$SCRIPT_DIR/zsh/zprofile.macos" "$HOME/.zprofile.local"
-elif [[ "$(uname)" == "Linux" ]]; then
-    replace "$SCRIPT_DIR/zsh/zprofile.linux" "$HOME/.zprofile.local"
-fi
+replace "$SCRIPT_DIR/zsh/zshrc" "$ZDOTDIR/zshrc"
+replace "$SCRIPT_DIR/zsh/zprofile" "$ZDOTDIR/zprofile"
+replace "$SCRIPT_DIR/zsh/zshenv" "$ZDOTDIR/zshenv"
 
-ZSH_PLUGIN_DIR="$HOME/.config/zsh/plugins"
+printf 'source "%s/zshenv"\n' "$ZDOTDIR" > "$HOME/.zshenv"
+printf 'source "%s/zprofile"\n' "$ZDOTDIR" > "$HOME/.zprofile"
+printf 'source "%s/zshrc"\n' "$ZDOTDIR" > "$HOME/.zshrc"
 
 clone_zsh_plugin() {
     local repo="$1"
     local name="${repo##*/}"
-    local path="$ZSH_PLUGIN_DIR/$name"
+    local path="$ZDOTDIR/plugins/$name"
 
     if [[ ! -d "$path" ]]; then
-        mkdir -p "$ZSH_PLUGIN_DIR"
         git clone --depth=1 "https://github.com/$repo" "$path"
     fi
 }
