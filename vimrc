@@ -197,7 +197,18 @@ nnoremap <leader>pd :LspDiag prev \| LspDiag current<CR>
 inoremap <silent> <C-Space> <C-x><C-o>
 
 
-" Git info
+" Functions
+
+function! TrimWhitespace()
+    let l:save = winsaveview()
+    keeppatterns %s/\s\+$//e
+    call winrestview(l:save)
+endfunction
+
+command! TrimWhitespace call TrimWhitespace()
+
+
+" Git branch
 
 let b:git_branch = ''
 
