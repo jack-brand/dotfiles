@@ -1,3 +1,5 @@
 [user]
     email = 74jdvb@gmail.com
     name = jack-brand
+[init]
+	defaultBranch = main
