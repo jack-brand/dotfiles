@@ -65,9 +65,9 @@ function! s:clone(repo)
 endfunction
 
 call s:clone('junegunn/fzf.vim')
-call s:clone('yegappan/lsp')
 call s:clone('SilentGlasses/colorhighlighter')
 call s:clone('ThunderBoltCODMYT/gruber-darker.vim')
+call s:clone('yegappan/lsp')
 
 
 " Colours
@@ -166,6 +166,7 @@ autocmd FileType php setlocal omnifunc=lsp#complete
 " Diagnostics
 let s:lspOpts = #{
     \ autoHighlightDiags: v:true,
+    \ showDiagWithSign: v:true,
     \ diagSignErrorText: '✘',
     \ diagSignWarningText: '▲',
     \ diagSignInfoText: '»',

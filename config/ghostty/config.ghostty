@@ -14,3 +14,11 @@ macos-titlebar-style = tabs
 adjust-cursor-thickness = 2
 
 split-divider-color = #453d41
+
+unfocused-split-opacity = 1
+
+keybind = super+h=new_split:left
+keybind = super+l=new_split:right
+keybind = super+k=new_split:up
+keybind = super+j=new_split:down
+
