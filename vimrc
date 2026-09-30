@@ -48,20 +48,20 @@ set clipboard=unnamed,unnamedplus
 
 " Plugins
 
-let s:plugin_dir = expand('~/.config/vim/plugins')
+let s:plugin_dir = expand('$HOME/.config/vim/plugins')
 
 function! s:clone(repo)
-    let name = split(a:repo, '/')[-1]
-    let path = s:plugin_dir . '/' . name
+    let l:name = split(a:repo, '/')[-1]
+    let l:path = s:plugin_dir . '/' . name
 
-    if !isdirectory(path)
+    if !isdirectory(l:path)
         if !isdirectory(s:plugin_dir)
             call mkdir(s:plugin_dir, 'p')
         endif
-        execute '!git clone --depth=1 https://github.com/' . a:repo . ' ' . shellescape(path)
+        execute '!git clone --depth=1 https://github.com/' . a:repo . ' ' . shellescape(l:path)
     endif
 
-    execute 'set runtimepath+=' . fnameescape(path)
+    execute 'set runtimepath+=' . fnameescape(l:path)
 endfunction
 
 call s:clone('junegunn/fzf.vim')
@@ -69,6 +69,16 @@ call s:clone('SilentGlasses/colorhighlighter')
 call s:clone('ThunderBoltCODMYT/gruber-darker.vim')
 call s:clone('yegappan/lsp')
 
+call s:clone('iamcco/markdown-preview.nvim')
+if !isdirectory(s:plugin_dir . '/markdown-preview.nvim/app/bin')
+    if executable('npx') && executable('yarn')
+        execute '!cd ' . shellescape(s:plugin_dir . '/markdown-preview.nvim/app/bin')
+                    \ . ' && NODE_OPTIONS=--openssl-legacy-provider npx --yes yarn install'
+                    \ . ' && NODE_OPTIONS=--openssl-legacy-provider npx --yes yarn build'
+    else
+        echo 'WARN: vimrc: markdown-preview.nvim requires npx and yarn executables on $PATH'
+    endif
+endif
 
 " Colours
 
@@ -86,7 +96,8 @@ let s:lspServers = [
         \ name: 'rust-analyzer',
         \ filetype: ['rust'],
         \ path: 'rust-analyzer',
-        \ args: []
+        \ args: [],
+        \ runIfSearch: ['Cargo.toml']
     \ },
     \ #{
         \ name: 'clangd',
