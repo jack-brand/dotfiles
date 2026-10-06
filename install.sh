@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Symlink dotfiles to `~/` and `~/.config/`.
-# Update dotfiles with `git pull` in this SCRIPT_DIR.
+# This script symlinks config files to `~/` and `~/.config/`.
+# To update the config files, simply execute `git pull` in this SCRIPT_DIR.
 
 # Author: Jack Brand <74jdvb@gmail.com>
 # Credit: Dave Eddy <dave@daveeddy.com> <https://github.com/bahamas10/dotfiles>
@@ -10,6 +10,13 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
+
+git -C "$SCRIPT_DIR" submodule update --init --recursive
+
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+mkdir -p "$CONFIG_DIR"
+
+manually_symlinked=()
 
 replace() {
     local src="$1"
@@ -32,37 +39,43 @@ replace() {
     ln -s "$src" "$dst"
 }
 
-git submodule update --init --recursive
+# Git
 
-# home directory
+replace "$SCRIPT_DIR/gitconfig" "$HOME/.gitconfig"
 
-dotfiles=(
-    bashrc
-    gitconfig
-)
+# Bash
 
-for f in "${dotfiles[@]}"; do
-    replace "$SCRIPT_DIR/$f" "$HOME/.$f"
+BASH_DIR="$CONFIG_DIR/bash"
+mkdir -p "$BASH_DIR"
+
+SCRIPT_BASH_DIR="$SCRIPT_DIR/config/bash"
+manually_symlinked+=('bash')
+
+replace "$SCRIPT_BASH_DIR/bashrc" "$BASH_DIR/bashrc"
+
+printf 'source "%s/bashrc"\n' "$BASH_DIR" > "$HOME/.bashrc"
+
+# Zsh
+
+manually_symlinked+=('zsh')
+
+SCRIPT_ZSH_DIR="$SCRIPT_DIR/config/zsh"
+
+ZSH_DIR="$CONFIG_DIR/zsh"
+mkdir -p "$ZSH_DIR"
+
+for name in 'zshrc' 'zprofile' 'zshenv'; do
+    replace "$SCRIPT_ZSH_DIR/$name" "$ZSH_DIR/$name"
+
+    printf 'source "%s"\n' "$ZSH_DIR/$name" > "$HOME/.$name"
 done
 
-# zsh
-
-ZDOTDIR="$HOME/.zsh"
-mkdir -p "$ZDOTDIR"
-mkdir -p "$ZDOTDIR/plugins"
-
-replace "$SCRIPT_DIR/zsh/zshrc" "$ZDOTDIR/zshrc"
-replace "$SCRIPT_DIR/zsh/zprofile" "$ZDOTDIR/zprofile"
-replace "$SCRIPT_DIR/zsh/zshenv" "$ZDOTDIR/zshenv"
-
-printf 'source "%s/zshenv"\n' "$ZDOTDIR" > "$HOME/.zshenv"
-printf 'source "%s/zprofile"\n' "$ZDOTDIR" > "$HOME/.zprofile"
-printf 'source "%s/zshrc"\n' "$ZDOTDIR" > "$HOME/.zshrc"
-
 clone_zsh_plugin() {
+    mkdir -p "$ZSH_DIR/plugins"
+
     local repo="$1"
     local name="${repo##*/}"
-    local path="$ZDOTDIR/plugins/$name"
+    local path="$ZSH_DIR/plugins/$name"
 
     if [[ ! -d "$path" ]]; then
         git clone --depth=1 "https://github.com/$repo" "$path"
@@ -74,28 +87,57 @@ clone_zsh_plugin "zsh-users/zsh-autosuggestions"
 clone_zsh_plugin "zsh-users/zsh-syntax-highlighting"
 clone_zsh_plugin "zsh-users/zsh-history-substring-search"
 
-# vim
+# Vim
 
-mkdir -p "$HOME/.config/vim"
+manually_symlinked+=('vim')
 
-replace "$SCRIPT_DIR/vimrc" "$HOME/.config/vim/vimrc"
+SCRIPT_VIM_DIR="$SCRIPT_DIR/config/vim"
 
-# config directory
+VIM_DIR="$CONFIG_DIR/vim"
+mkdir -p "$VIM_DIR"
 
-mkdir -p "$HOME/.config"
+replace "$SCRIPT_VIM_DIR/vimrc" "$VIM_DIR/vimrc"
 
-for f in "$SCRIPT_DIR/config"/*; do
-    name="${f##*/}"
-    replace "$f" "$HOME/.config/$name"
+# Vis
+
+manually_symlinked+=('vis')
+
+SCRIPT_VIS_DIR="$SCRIPT_DIR/config/vis"
+
+VIS_DIR="$CONFIG_DIR/vis"
+mkdir -p "$VIS_DIR"
+
+for subdir in 'plugins' 'themes'; do
+    mkdir -p "$VIS_DIR/$subdir"
+    
+    for path in "$SCRIPT_VIS_DIR/$subdir"/*; do
+        name="${path##*/}"
+        replace "$path" "$VIS_DIR/$subdir/$name"
+    done
 done
 
-# macOS
+# Symlink directories
+
+for path in "$SCRIPT_DIR/config"/*; do
+    name="${path##*/}"
+
+    for excluded in "${manually_symlinked[@]}"; do
+        [[ "$name" == "$excluded" ]] && continue 2
+    done
+
+    replace "$path" "$CONFIG_DIR/$name"
+done
+
+# MacOS
 
 if [[ "$(uname)" == "Darwin" ]]; then
-    mkdir -p ~/Library/KeyBindings
-    replace "$SCRIPT_DIR/DefaultKeyBindings.dict" ~/Library/KeyBindings/DefaultKeyBindings.dict
-    
-    "$BASH" "$SCRIPT_DIR/macos_defaults.sh"
+    MAC_SCRIPT_DIR="$SCRIPT_DIR/mac"
+
+    KEYBIND_DIR="$HOME/Library/KeyBindings"
+    mkdir -p "$KEYBIND_DIR"
+    replace "$MAC_SCRIPT_DIR/DefaultKeyBindings.dict" "$KEYBIND_DIR/DefaultKeyBindings.dict"
+
+    "$BASH" "$MAC_SCRIPT_DIR/mac_defaults.sh"
 fi
 
 true

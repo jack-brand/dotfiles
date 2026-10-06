@@ -16,7 +16,7 @@ set shiftwidth=4
 set softtabstop=4
 set tabstop=4
 set smartindent
-set backspace=indent,eol,start
+set backspace=eol,start
 set mouse=a
 set shortmess+=I
 set ttimeout
@@ -37,7 +37,9 @@ syntax on
 " Normal, visual, command line: block
 " Insert, command line insert: vertical
 " Replace, command line replace: horizontal
-set guicursor=n-v-c:block-blinkwait500-blinkon500-blinkoff500,i:ver25-blinkwait500-blinkon500-blinkoff500,r:hor20-blinkwait500-blinkon500-blinkoff500
+set guicursor=n-v-c:block-blinkwait500-blinkon500-blinkoff500,
+            \i:ver25-blinkwait500-blinkon500-blinkoff500,
+            \r:hor20-blinkwait500-blinkon500-blinkoff500
 let &t_SI = "\<Esc>[6 q"
 let &t_SR = "\<Esc>[4 q"
 let &t_EI = "\<Esc>[2 q"
@@ -50,33 +52,77 @@ set clipboard=unnamed,unnamedplus
 
 let s:plugin_dir = expand('$HOME/.config/vim/plugins')
 
+if !isdirectory(s:plugin_dir)
+    call mkdir(s:plugin_dir, 'p')
+endif
+
 function! s:clone(repo)
-    let l:name = split(a:repo, '/')[-1]
-    let l:path = s:plugin_dir . '/' . name
+    let l:path = s:plugin_dir . '/' . fnamemodify(a:repo, ':t')
 
     if !isdirectory(l:path)
-        if !isdirectory(s:plugin_dir)
-            call mkdir(s:plugin_dir, 'p')
+        call system('git clone --depth=1 https://github.com/'
+                    \ . a:repo . ' ' . shellescape(l:path))
+
+        if v:shell_error
+            echoerr 'ERROR: vimrc: Failed to clone ' . a:repo
+            return
         endif
-        execute '!git clone --depth=1 https://github.com/' . a:repo . ' ' . shellescape(l:path)
     endif
 
     execute 'set runtimepath+=' . fnameescape(l:path)
 endfunction
 
+function! PluginUpdate()
+    let l:plugin_list = glob(l:plugin_dir . '/*', 0, 1)
+
+    if empty(l:plugin_list)
+        echomsg 'INFO: PluginUpdate: Empty plugin directory'
+        return
+    endif
+
+    for l:path in l:plugin_list
+        if isdirectory(l:path . '/.git')
+            let l:plugin_name = fnamemodify(l:path, ':t')
+
+            echomsg 'INFO: PluginUpdate: Updating ' . l:plugin_name . '...'
+
+            let l:output = system('git -C ' . shellescape(l:path) . ' pull --ff-only')
+ 
+            if v:shell_error
+                echoerr 'ERROR: PluginUpdate: Failed to update ' . l:plugin_name
+            else
+                echomsg 'INFO: PluginUpdate: ' . substitute(l:output, '\n\+$', '', '')
+            endif
+        endif
+    endfor
+endfunction
+
+command! PluginUpdate call PluginUpdate()
+
 call s:clone('junegunn/fzf.vim')
+call s:clone('junegunn/vim-easy-align')
 call s:clone('SilentGlasses/colorhighlighter')
 call s:clone('ThunderBoltCODMYT/gruber-darker.vim')
 call s:clone('yegappan/lsp')
+call s:clone('tpope/vim-commentary')
 
 call s:clone('iamcco/markdown-preview.nvim')
+
 if !isdirectory(s:plugin_dir . '/markdown-preview.nvim/app/bin')
-    if executable('npx') && executable('yarn')
-        execute '!cd ' . shellescape(s:plugin_dir . '/markdown-preview.nvim/app/bin')
-                    \ . ' && NODE_OPTIONS=--openssl-legacy-provider npx --yes yarn install'
-                    \ . ' && NODE_OPTIONS=--openssl-legacy-provider npx --yes yarn build'
+    if executable('yarn')
+        let l:output = system(
+                    \ 'cd ' . shellescape(s:plugin_dir . '/markdown-preview.nvim/app/bin')
+                    \ . ' && export NODE_OPTIONS=--openssl-legacy-provider'
+                    \ . ' && yarn install && yarn build')
+
+        if v:shell_error
+            echoerr 'ERROR: vimrc: Failed to build markdown-preview.nvim'
+            echomsg l:output
+        endif
     else
-        echo 'WARN: vimrc: markdown-preview.nvim requires npx and yarn executables on $PATH'
+        echohl WarningMsg
+        echomsg 'WARN: vimrc: markdown-preview.nvim requires yarn executable on $PATH'
+        echohl None
     endif
 endif
 
@@ -190,8 +236,11 @@ autocmd User LspSetup call LspOptionsSet(s:lspOpts)
 
 let mapleader = " "
 
+" Redo
+nnoremap U <C-r>
+
 " Copy entire buffer
-nnoremap ya :%y
+nnoremap ya :%y<CR>
 
 " Search current directory in a fzf menu
 nnoremap <leader>p :Files<CR>
