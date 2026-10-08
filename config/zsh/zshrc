@@ -1,75 +1,68 @@
-# Environment
+# Modules
 
-export ZDOTDIR="$HOME/.zsh"
-
-export PAGER="less"
-export MANPAGER="less"
-export VISUAL="vim"
-export LESS="--raw-control-chars --quit-if-one-screen --no-init"
-
-export LESS_TERMCAP_md=$'\e[1;33m'  # bold -> bold, yellow
-export LESS_TERMCAP_so=$'\e[30;43m' # standout -> black, yellow background
-export LESS_TERMCAP_us=$'\e[4;34m'  # underline -> underline, blue
-export LESS_TERMCAP_mr=$'\e[7m'     # reverse -> reverse
-export LESS_TERMCAP_mh=$'\e[2m'     # dim -> dim
-export LESS_TERMCAP_mb=$'\e[5m'     # blink -> blink
-
-export LESS_TERMCAP_me=$'\e[0m'     # end all
-export LESS_TERMCAP_se=$'\e[0m'     # end standout
-export LESS_TERMCAP_ue=$'\e[0m'     # end underline
-
-export BAT_PAGER="less --raw-control-chars --quit-if-one-screen"
-
-export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*"'
-export FZF_DEFAULT_OPTS="--multi --wrap"
-# export FZF_DEFAULT_OPTS+="--preview='bat --style=numbers --color=always {}'"
-
-# Zsh
-
-unsetopt correct_all
-setopt interactivecomments
-setopt prompt_subst
-setopt EXTENDED_GLOB
-setopt globdots
-
-autoload -Uz colors zmv
-colors
-
+autoload -Uz compinit && compinit
+autoload -Uz colors && colors
+autoload -Uz zmv
 # autoload -Uz add-zsh-hook
 
-# Completion
 
-autoload -Uz compinit
-compinit
+# Options
 
-zstyle ":completion:*" menu no
+setopt append_history  # history: append instead of overwrite
+setopt inc_append_history  # history: append when commands are executed
+setopt share_history  # history: share across sessions
+setopt histignorealldups  # history: don't append duplicates
+unsetopt correct_all
+setopt interactive_comments  # allow comments in shell
+setopt auto_param_slash  # completion: append '/' to instead of ' '
+setopt no_case_glob no_case_match  # completion: case insensitive
+setopt prompt_subst  # prompt: 
+unsetopt prompt_sp  # prompt: don't automatically clean lines
+setopt globdots  # include dotfiles
+setopt extended_glob  # match '~', '#', and '^'
+stty stop undef # disable accidental <ctrl>+s
+
+zstyle ":completion:*" menu no  # completion: menu is unnecessary because of fzf-tab
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ma=0\;33  # completion: colorize menu
+zstyle ':completion:*' squeeze-slashes false # completion: allow /*/ expansion
+
 
 # Plugins
 
 ZPLUGDIR="$ZDOTDIR/plugins"
 
 source "$ZPLUGDIR/fzf-tab/fzf-tab.zsh"
+
 source "$ZPLUGDIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
-source "$ZPLUGDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-source "$ZPLUGDIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
-
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243"
+bindkey '^W' autosuggest-accept
 
+source "$ZPLUGDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+source "$ZPLUGDIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
 HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
 HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND=(bg=8)
 HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND=(bg=1)
+bindkey '^k' history-substring-search-up
+bindkey '^j' history-substring-search-down
+
 
 # History
 
-HISTFILE="$ZDOTDIR/history"
+HISTFILE="$XDG_CACHE_HOME/zsh_history"
+HISTCONTROL=ignoreboth
 HISTSIZE=5000
 SAVEHIST=5000
 
-setopt sharehistory
-setopt histignorealldups
 
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
+# Keybinds
+
+bindkey '^a' beginning-of-line
+bindkey '^e' end-of-line
+bindkey '^b' backward-word
+bindkey '^w' forward-word
+bindkey '^h' backward-kill-word
+
 
 # Prompt
 
@@ -81,21 +74,34 @@ PS1+='[%~]'
 PS1+=$'\n'
 PS1+='%F{green}%%%f '
 
-# External tools
 
-if command -v zoxide &>/dev/null; then
-    zoxide() {
-        unfunction zoxide
-        eval "$(command zoxide init zsh)"
-        command zoxide "$@"
-    }
-fi
+# External programs
+
+# if command -v zoxide &>/dev/null; then
+#     zoxide() {
+#         unfunction zoxide
+#         eval "$(command zoxide init zsh)"
+#         command zoxide "$@"
+#     }
+# fi
 
 if command -v direnv &>/dev/null; then
     eval "$(direnv hook zsh)"
 fi
 
-# Aliases
+source <(fzf --zsh)
+bindkey '^K' fzf-history-widget
+
+
+# Aliases & functions
+
+if [ -f "$XDG_CONFIG_HOME/shell/alias" ]; then
+    source "$XDG_CONFIG_HOME/shell/alias"
+fi
+
+if [ -f "$XDG_CONFIG_HOME/shell/vars" ]; then
+    source "$XDG_CONFIG_HOME/shell/vars"
+fi
 
 if command -v eza &>/dev/null; then
     alias ls="eza -al --no-user --changed --git"
@@ -116,6 +122,284 @@ copy() {
     elif command -v wl-copy &>/dev/null; then
         wl-copy
     fi
+}
+
+fzo() {
+    local flag="${1-}"
+
+    local usage_msg="usage: fzo [-a|-e]"
+
+    case "$flag" in
+        # Open with the system default application
+        "")
+            local file
+            file=$(fzf) || return
+            if [[ "$(uname -s)" == "Darwin" ]]; then
+                open -- "$file"
+            elif command -v xdg-open >/dev/null 2>&1; then
+                xdg-open "$file"
+            elif command -v gio >/dev/null 2>&1; then
+                gio open "$file"
+            else
+                printf 'ERROR: fzo: no file opener found\n' >&2
+                return 1
+            fi
+            ;;
+
+        # Choose a GUI application from .desktop files
+        "-a")
+            local file
+            file=$(fzf) || return
+
+            # Mac
+            if [[ "$(uname -s)" == "Darwin" ]]; then
+                local app=$(
+                    find /Applications "$HOME/Applications" \
+                        -type d \
+                        -name '*.app' \
+                        -print 2>/dev/null |
+                    sed 's#^.*/##; s/\.app$//' |
+                    sort -u |
+                    fzf
+                ) || return
+
+                open -a "$app" -- "$file"
+
+            # Linux
+            else
+                local data_home="${XDG_DATA_HOME:-"$HOME/.local/share"}"
+                local data_dirs="${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+
+                local dir name try_exec
+
+                local desktop=$(
+                    {
+                        # User applications.
+                        if [[ -d "$data_home/applications" ]]; then
+                            find "$data_home/applications" \
+                                -type f \
+                                -name '*.desktop' \
+                                -print 2>/dev/null
+                        fi
+
+                        # System applications.
+                        for dir in ${data_dirs//:/ }; do
+                            [[ -d "$dir/applications" ]] || continue
+
+                            find "$dir/applications" \
+                                -type f \
+                                -name '*.desktop' \
+                                -print 2>/dev/null
+                        done
+                    } |
+                    while IFS= read -r desktop; do
+                        # Only ordinary GUI application entries.
+                        grep -q '^Type=Application$' "$desktop" || continue
+
+                        # Don't show explicitly hidden applications.
+                        grep -q '^Hidden=true$' "$desktop" && continue
+
+                        # Don't show applications intentionally excluded from menus.
+                        grep -q '^NoDisplay=true$' "$desktop" && continue
+
+                        name=$(
+                            sed -n 's/^Name=\(.*\)$/\1/p' "$desktop" |
+                            head -n 1
+                        )
+
+                        [[ -n "$name" ]] || continue
+
+                        # If TryExec is present, make sure the executable exists.
+                        try_exec=$(
+                            sed -n 's/^TryExec=\(.*\)$/\1/p' "$desktop" |
+                            head -n 1
+                        )
+
+                        if [[ -n "$try_exec" ]]; then
+                            if [[ "$try_exec" == */* ]]; then
+                                [[ -x "$try_exec" ]] || continue
+                            else
+                                command -v "$try_exec" >/dev/null 2>&1 || continue
+                            fi
+                        fi
+
+                        printf '%s\t%s\n' "$name" "$desktop"
+                    done |
+                    sort -t $'\t' -k1,1f -u |
+                    fzf --with-shell='zsh -c' |
+                    cut -f2-
+                ) || return
+
+                [[ -f "$desktop" ]] || return 1
+
+                # Read desktop-entry fields.
+                local exec_line=$(
+                    sed -n 's/^Exec=\(.*\)$/\1/p' "$desktop" |
+                    head -n 1
+                )
+
+                if [[ -z "$exec_line" ]]; then
+                    printf 'ERROR: fzo: no `Exec=` entry in:\n  %s\n' "$desktop" >&2
+                    return 1
+                fi
+
+                local workdir=$(
+                    sed -n 's/^Path=\(.*\)$/\1/p' "$desktop" |
+                    head -n 1
+                )
+
+                local name=$(
+                    sed -n 's/^Name=\(.*\)$/\1/p' "$desktop" |
+                    head -n 1
+                )
+
+                local icon=$(
+                    sed -n 's/^Icon=\(.*\)$/\1/p' "$desktop" |
+                    head -n 1
+                )
+
+                # Parse `Exec=` according to desktop-entry quoting rules.
+                local argv=()
+                local arg=''
+                local in_quotes=false
+                local escaped=false
+                local i c
+
+                for ((i = 0; i < ${#exec_line}; i++)); do
+                    c="${exec_line:i:1}"
+
+                    if [[ "$escaped" == true ]]; then
+                        case "$c" in
+                            '"'|'`'|'$'|'\'|$'\n')
+                                arg+="$c"
+                                ;;
+                            *)
+                                arg+="\\$c"
+                                ;;
+                        esac
+
+                        escaped=false
+                        continue
+                    fi
+
+                    if [[ "$c" == '\' ]]; then
+                        escaped=true
+                        continue
+                    fi
+
+                    if [[ "$c" == '"' ]]; then
+                        if [[ "$in_quotes" == true ]]; then
+                            in_quotes=false
+                        else
+                            in_quotes=true
+                        fi
+                        continue
+                    fi
+
+                    if [[ "$in_quotes" == false && "$c" == ' ' ]]; then
+                        if [[ -n "$arg" ]]; then
+                            argv+=("$arg")
+                            arg=''
+                        fi
+                        continue
+                    fi
+
+                    arg+="$c"
+                done
+
+                if [[ -n "$arg" ]]; then
+                    argv+=("$arg")
+                fi
+
+                if ((${#argv[@]} == 0)); then
+                    printf 'ERROR: fzo: could not parse `Exec=` in:\n  %s\n' "$desktop" >&2
+                    return 1
+                fi
+
+                # Expand desktop-entry field codes.
+                local expanded=()
+                for arg in "${argv[@]}"; do
+                    case "$arg" in
+                        '%f'|'%F'|'%u'|'%U')
+                            expanded+=("$file")
+                            ;;
+
+                        '%c')
+                            expanded+=("$name")
+                            ;;
+
+                        '%k')
+                            expanded+=("$desktop")
+                            ;;
+
+                        '%i')
+                            if [[ -n "$icon" ]]; then
+                                expanded+=("--icon" "$icon")
+                            fi
+                            ;;
+
+                        '%%')
+                            expanded+=('%')
+                            ;;
+
+                        *'%f'*|*'%F'*|*'%u'*|*'%U'*|*'%c'*|*'%k'*|*'%i'*|*'%%'*)
+                            printf 'ERROR: fzo: unsupported field-code placement in `Exec=`:\n  %s\n' \
+                                "$exec_line" >&2
+                            return 1
+                            ;;
+
+                        *)
+                            expanded+=("$arg")
+                            ;;
+                    esac
+                done
+
+                # Launch the application.
+                if [[ -n "$workdir" ]]; then
+                    cd "$workdir" 2>/dev/null || {
+                        printf 'ERROR: fzo: cannot `cd` to `Path=` directory:\n  %s\n' "$workdir" >&2
+                        exit 1
+                    }
+                    command -- "${expanded[@]}"
+                else
+                    command -- "${expanded[@]}"
+                fi
+             fi
+            ;;
+
+        # Choose an arbitrary executable from PATH
+        "-e")
+            local file
+            file=$(fzf) || return
+
+            local app=$(
+                {
+                    IFS=:
+                    for dir in $PATH; do
+                        [[ -d "$dir" ]] || continue
+
+                        for executable in "$dir"/*; do
+                            [[ -f "$executable" && -x "$executable" ]] || continue
+                            printf '%s\n' "${executable##*/}"
+                        done
+                    done
+                } |
+                sort -u |
+                fzf
+            ) || return
+
+            [[ -n "$app" ]] || return 1
+
+            command -- "$app" "$file"
+            ;;
+
+        # Unrecognised flag
+        *)
+            printf 'ERROR: fzo: unrecognised flag "%s"\n' "$flag" >&2
+            printf '%s\n' "$usage_msg" >&2
+            return 1
+            ;;
+    esac
 }
 
 palette() {

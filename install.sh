@@ -45,15 +45,18 @@ replace "$SCRIPT_DIR/gitconfig" "$HOME/.gitconfig"
 
 # Bash
 
+manually_symlinked+=('bash')
+
+SCRIPT_BASH_DIR="$SCRIPT_DIR/config/bash"
+
 BASH_DIR="$CONFIG_DIR/bash"
 mkdir -p "$BASH_DIR"
 
-SCRIPT_BASH_DIR="$SCRIPT_DIR/config/bash"
-manually_symlinked+=('bash')
-
 replace "$SCRIPT_BASH_DIR/bashrc" "$BASH_DIR/bashrc"
-
-printf 'source "%s/bashrc"\n' "$BASH_DIR" > "$HOME/.bashrc"
+if [[ -f "$HOME/.bashrc" ]]; then
+    rm "$HOME/.bashrc"
+fi
+ln -s "$BASH_DIR/bashrc" "$HOME/.bashrc"
 
 # Zsh
 
@@ -65,10 +68,13 @@ ZSH_DIR="$CONFIG_DIR/zsh"
 mkdir -p "$ZSH_DIR"
 
 for name in 'zshrc' 'zprofile' 'zshenv'; do
-    replace "$SCRIPT_ZSH_DIR/$name" "$ZSH_DIR/$name"
-
-    printf 'source "%s"\n' "$ZSH_DIR/$name" > "$HOME/.$name"
+    replace "$SCRIPT_ZSH_DIR/$name" "$ZSH_DIR/.$name"
+    if [[ -f "$HOME/.$name" ]]; then
+        rm "$HOME/.$name"
+    fi
 done
+
+printf 'export ZDOTDIR=\"%s\"\n' "$ZSH_DIR" > "$HOME/.zshenv"
 
 clone_zsh_plugin() {
     mkdir -p "$ZSH_DIR/plugins"
@@ -106,6 +112,8 @@ SCRIPT_VIS_DIR="$SCRIPT_DIR/config/vis"
 
 VIS_DIR="$CONFIG_DIR/vis"
 mkdir -p "$VIS_DIR"
+
+replace "$SCRIPT_VIS_DIR/visrc.lua" "$VIS_DIR/visrc.lua"
 
 for subdir in 'plugins' 'themes'; do
     mkdir -p "$VIS_DIR/$subdir"

@@ -232,6 +232,31 @@ let s:lspOpts = #{
 autocmd User LspSetup call LspOptionsSet(s:lspOpts)
 
 
+" Functions
+
+function! TrimWhitespace()
+    let l:save = winsaveview()
+    keeppatterns %s/\s\+$//e
+    call winrestview(l:save)
+endfunction
+
+command! TrimWhitespace call TrimWhitespace()
+
+function! SearchReplace()
+    let l:search = input('search: ')
+    if l:search ==# ''
+        return
+    endif
+
+    let l:replace = input('replace: ')
+    if l:replace ==# ''
+        return
+    endif
+
+    execute '%s/' . escape(l:search, '/') . '/' . escape(l:replace, '/') . '/gc'
+endfunction
+
+
 " Keybinds
 
 let mapleader = " "
@@ -245,6 +270,9 @@ nnoremap ya :%y<CR>
 " Search current directory in a fzf menu
 nnoremap <leader>p :Files<CR>
 
+" Interactive search and replace
+nnoremap <leader>sr :call SearchReplace()<CR>
+
 " Ripgrep search current directory in a fzf menu
 nnoremap <leader>rg :Rg<Space>
 
@@ -256,17 +284,6 @@ nnoremap gl :LspDiag current<CR>
 nnoremap <leader>nd :LspDiag next \| LspDiag current<CR>
 nnoremap <leader>pd :LspDiag prev \| LspDiag current<CR>
 inoremap <silent> <C-Space> <C-x><C-o>
-
-
-" Functions
-
-function! TrimWhitespace()
-    let l:save = winsaveview()
-    keeppatterns %s/\s\+$//e
-    call winrestview(l:save)
-endfunction
-
-command! TrimWhitespace call TrimWhitespace()
 
 
 " Git branch
