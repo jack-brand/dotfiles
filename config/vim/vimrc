@@ -28,6 +28,8 @@ set incsearch
 set nohlsearch
 set endofline
 set fixendofline
+set wrap
+set display+=lastline
 set list
 set listchars=space:·,tab:▸\ ,trail:·,nbsp:␣
 

@@ -1,0 +1,40 @@
+*:not(deck) {
+    font-family:"IosevkaMono Nerd Font";
+    /* font-weight:bold; */
+    font-size:16px;
+}
+
+toolbarbutton.bookmark-item .toolbarbutton-icon, .tab-content .tab-icon-image {
+    display:none !important;
+}
+
+toolbarbutton.bookmark-item {
+    padding:5px !important;
+}
+
+.tab-content .tab-throbber, .tab-content .tab-throbber-fallback {
+    display:none !important;
+}
+
+#tabbrowser-tabs, #tabbrowser-tab {
+    --tab-line-color:#453d41 !important;
+    border:0 !important;
+}
+
+textbox#urlbar, #navigator-toolbox .searchbar-textbox {
+    background:none !important;
+    border:0 !important;
+}
+
+box#identity-box {
+    display:none;
+}
+
+toolbarbutton#back-button, toolbarbutton#forward-button, toolbaritem#stop-reload-button, toolbarbutton#home-button {
+    display:none !important;
+}
+
+toolbarbutton#firefox-view-button, toolbarbutton#alltabs-button {
+    display:none !important;
+}
+

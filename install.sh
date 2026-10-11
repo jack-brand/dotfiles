@@ -24,8 +24,8 @@ replace() {
 
     if [[ -e "$dst" || -L "$dst" ]]; then
         printf 'Replace %s with %s? [y/N] ' \
-            "${dst/#$HOME/\~}" \
-            "${src/#$HOME/\~}"
+            "${dst/#$HOME/~}" \
+            "${src/#$HOME/~}"
         read -r reply
 
         [[ "$reply" == [yY] ]] || {
@@ -124,7 +124,7 @@ for subdir in 'plugins' 'themes'; do
     done
 done
 
-# Symlink directories
+# Other
 
 for path in "$SCRIPT_DIR/config"/*; do
     name="${path##*/}"
@@ -134,6 +134,14 @@ for path in "$SCRIPT_DIR/config"/*; do
     done
 
     replace "$path" "$CONFIG_DIR/$name"
+done
+
+# Bin
+
+for path in "$SCRIPT_DIR/bin"/*; do
+    name="${path##*/}"
+    replace "$path" "$HOME/.local/bin/$name"
+    chmod +x "$name"
 done
 
 # MacOS
