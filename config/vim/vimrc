@@ -278,6 +278,10 @@ nnoremap <leader>sr :call SearchReplace()<CR>
 " Ripgrep search current directory in a fzf menu
 nnoremap <leader>rg :Rg<Space>
 
+" EasyAlign
+nmap ga :EasyAlign<Space>
+xmap ga :EasyAlign<Space>
+
 " Lsp
 nnoremap gd :LspGotoDefinition<CR>
 nnoremap gr :LspShowReferences<CR>

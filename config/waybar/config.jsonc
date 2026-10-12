@@ -1,0 +1,92 @@
+//-*- mode: jsonc -*-
+
+// Author: Jack Brand <74jdvb@gmail.com> <https://github.com/jack-brand>
+// Credit: tony <https://github.com/tonybanters/waybar>
+
+{
+    "layer": "top", 
+    "position": "top", 
+    "height": 30, 
+    "spacing": 4, 
+
+    // Choose the order of the modules
+    "modules-left": [
+        "ext/workspaces"
+    ],
+    "modules-center": [
+        "ext/window"
+    ],
+
+    "modules-right": [
+        "network",
+        "custom/sep",
+        "cpu",
+        "custom/sep",
+        "memory",
+        "custom/sep",
+        "disk",
+        "custom/sep",
+        "clock",
+        "custom/sep",
+        "tray"
+    ],
+
+    // Modules configuration
+    "ext/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": true,
+        "warp-on-scroll": false,
+        "format": "{name}",
+        "persistent-workspaces": {
+            "*" : 9
+        }
+    },
+    "ext/window" : {
+        "max-length": 40,
+        "seperate-outputs": false
+    },
+    "tray": {
+        // "icon-size": 21,
+        "spacing": 10
+        // "icons": {
+        //   "blueman": "bluetooth",
+        //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
+        // }
+    },
+    "clock": {
+        "format": "{H}:{M}:{S}",
+        "format-alt": "{: %d %M %Y}"
+    },
+    "cpu": {
+        "format": "CPU: {usage}%",
+        "tooltip": false
+    },
+    "memory": {
+        "format": "RAM: {used} GiB"
+    },
+    "disk": {
+        "interval": 60,
+        "path": "/",
+        "format": "STOR: {free}"
+    },
+    "battery": {
+        "states": {
+            "good": 80,
+            "warning": 30,
+            "critical": 10
+        },
+        "format": "BAT: {capacity}% {icon} {time}",
+        "format-plugged": "{capacity}% ",
+        "format-alt": "BAT: {capacity}%",
+        "format-time": "{H}:{M}:{S}",
+        "format-icons": ["", "", "", "", ""]
+    },
+    "network": {
+        "format": "On",
+        "format-disconnected": "Off ⚠"
+    },
+    "custom/sep": {
+        "format" : "|",
+        "interval" : 0
+    }
+}

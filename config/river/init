@@ -1,5 +1,7 @@
 #!/bin/sh
 
+swaybg -i "$HOME/pictures/wallpapers/<imgfile>"
+
 exec pulseaudio --start &
 # exec <bar> &
 exec foot --server &

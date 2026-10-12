@@ -3,9 +3,8 @@
 # This script symlinks config files to `~/` and `~/.config/`.
 # To update the config files, simply execute `git pull` in this SCRIPT_DIR.
 
-# Author: Jack Brand <74jdvb@gmail.com>
+# Author: Jack Brand <74jdvb@gmail.com> <https://github.com/jack-brand>
 # Credit: Dave Eddy <dave@daveeddy.com> <https://github.com/bahamas10/dotfiles>
-# License: MIT
 
 set -euo pipefail
 
@@ -123,6 +122,17 @@ for subdir in 'plugins' 'themes'; do
         replace "$path" "$VIS_DIR/$subdir/$name"
     done
 done
+
+# Spotatui
+
+manually_symlinked+=('spotatui')
+
+SPOTATUI_DIR="$CONFIG_DIR/spotatui"
+mkdir -p "$SPOTATUI_DIR"
+
+replace "$SCRIPT_DIR/config/spotatui/config.yml" "$SPOTATUI_DIR/config.yml" 
+
+# License: MIT
 
 # Other
 
