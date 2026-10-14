@@ -177,8 +177,8 @@ fi
 # Spotlight
 defaults write com.apple.lookup lookupEnabled -dict-add suggestionsEnabled -bool no  # disable telemetry
 
-echo 'Restarting Dock and Finder'
 killall Dock Finder
+echo 'Restarted Dock and Finder'
 
 true
 

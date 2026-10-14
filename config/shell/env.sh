@@ -1,0 +1,100 @@
+export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+
+export EDITOR="vim"
+export LANG=en_ZA.UTF-8
+export PAGER="less"
+export MANPAGER="less"
+export VISUAL="vim"
+
+export LESSHISTFILE="$XDG_CACHE_HOME/less_history"
+export PYTHON_HISTORY="$XDG_DATA_HOME/python/history"
+
+export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
+export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
+export CARGO_HOME="$XDG_DATA_HOME/cargo"
+export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
+export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME/java"
+export _JAVA_AWT_WM_NONREPARENTING=1
+export FFMPEG_DATADIR="$XDG_CONFIG_HOME/ffmpeg"
+
+export LESS="--raw-control-chars --quit-if-one-screen --no-init --use-color"
+
+export LESS_TERMCAP_md=$'\e[1;33m'  # bold -> bold, yellow
+export LESS_TERMCAP_so=$'\e[30;43m' # standout -> black, yellow background
+export LESS_TERMCAP_us=$'\e[34m'    # underline -> blue
+export LESS_TERMCAP_mr=$'\e[7m'     # reverse -> reverse
+export LESS_TERMCAP_mh=$'\e[2m'     # dim -> dim
+export LESS_TERMCAP_mb=$'\e[5m'     # blink -> blink
+
+export LESS_TERMCAP_me=$'\e[0m'     # end all
+export LESS_TERMCAP_se=$'\e[0m'     # end standout
+export LESS_TERMCAP_ue=$'\e[0m'     # end underline
+
+export BAT_PAGER="less --raw-control-chars --quit-if-one-screen"
+
+export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*"'
+export FZF_DEFAULT_OPTS="--multi --wrap --style minimal --color 16 --height 30%"
+# export FZF_DEFAULT_OPTS+="--preview='bat -p --style=numbers --color=always {}'"
+
+latest_version() {
+    printf '%s\n' "$1"/*(:t) |
+        grep -E '^[0-9]+(\.[0-9]+)+$' |
+        sort -V |
+        tail -n 1
+}
+
+# LHAPDF
+if [[ -d "$HOME/hep/lhapdf" ]]; then
+    LHAPDF_VER=$(latest_version "$HOME/hep/lhapdf")
+    if [[ -d "$HOME/hep/lhapdf/$LHAPDF_VER/bin" ]]; then
+        export PATH="$PATH:$HOME/hep/lhapdf/$LHAPDF_VER/bin"
+        if command -v lhapdf-config &>/dev/null; then
+            export LHAPDF_DATA_PATH="$(lhapdf-config --datadir)"
+            export LHAPDF_DATADIR="$(lhapdf-config --datadir)"
+        fi
+    fi
+fi
+
+# MacOS
+if [[ "$(uname)" == "Darwin" ]]; then
+    ARCH="$(uname -m)" 
+ 
+    # Homebrew
+    if [[ "$ARCH" == "arm64" ]]; then
+        BREWDIR="/opt/homebrew"
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        BREWDIR="/usr/local"
+    else
+        echo "ERROR: ${(%):-%N} :: \`uname -m\` is neither arm64 nor x86_64"
+        exit 1
+    fi
+
+    if [[ -d "$BREWDIR" ]]; then
+        if [[ -x "$BREWDIR/bin/brew" ]]; then
+            eval "$("$BREWDIR/bin/brew" shellenv)"
+        fi
+
+        if [[ -d "$BREWDIR/opt/vim/bin" ]]; then
+            export PATH="$BREWDIR/opt/vim/bin:$PATH"
+        fi
+
+        if [[ -d "$BREWDIR/share/zsh" ]]; then
+            fpath=(
+                "$BREWDIR/share/zsh/functions"
+                "$BREWDIR/share/zsh/site-functions"
+                $fpath
+            )
+        fi
+
+        export HOMEBREW_NO_AUTO_UPDATE=1
+    fi
+
+    # Wolfram
+    if [[ -d "/Applications/Wolfram.app/Contents/MacOS" ]]; then
+        export PATH="$PATH:/Applications/Wolfram.app/Contents/MacOS"
+    fi
+fi

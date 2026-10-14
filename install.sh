@@ -1,22 +1,25 @@
 #!/usr/bin/env bash
 
 # This script symlinks config files to `~/` and `~/.config/`.
-# To update the config files, simply execute `git pull` in this SCRIPT_DIR.
+# To update the config files, simply execute `git pull` in 
+# this SCRIPT_DIR.
 
 # Author: Jack Brand <74jdvb@gmail.com> <https://github.com/jack-brand>
 # Credit: Dave Eddy <dave@daveeddy.com> <https://github.com/bahamas10/dotfiles>
 
 set -euo pipefail
 
-YES=false
+SCRIPT_NAME="${0##*/}"
 
+YES=false
 while (($#)); do
     case "$1" in
         "-y"|"--yes")
             YES=true
             ;;
         *)
-            printf 'Unknown option: %s\n' "$1" >&2
+            printf '%s: Unknown option: %s\n' \
+                "$SCRIPT_NAME" "$1" >&2
             exit 1
             ;;
     esac
@@ -41,7 +44,8 @@ replace() {
 
     if [[ -e "$dst" || -L "$dst" ]]; then
         if [[ "$YES" != true ]]; then
-            printf 'Replace %s with %s? [y/N] ' "$dst_print" "$src_print"
+            printf 'Replace %s with %s? [y/N] ' \
+                "$dst_print" "$src_print"
             read -r reply
 
             [[ "$reply" == [yY] ]] || {
@@ -142,13 +146,16 @@ for subdir in 'plugins' 'themes'; do
 done
 
 # Spotatui
+# (manually symlinked so that the private and unique
+# `spotatui/client.yml` is not exposed in the repo)
 
 manually_symlinked+=('spotatui')
 
 SPOTATUI_DIR="$CONFIG_DIR/spotatui"
 mkdir -p "$SPOTATUI_DIR"
 
-replace "$SCRIPT_DIR/config/spotatui/config.yml" "$SPOTATUI_DIR/config.yml" 
+replace "$SCRIPT_DIR/config/spotatui/config.yml" \
+    "$SPOTATUI_DIR/config.yml"
 
 # Other
 
@@ -189,7 +196,8 @@ if [[ "$(uname)" == "Darwin" ]]; then
 
     KEYBIND_DIR="$HOME/Library/KeyBindings"
     mkdir -p "$KEYBIND_DIR"
-    replace "$MAC_SCRIPT_DIR/DefaultKeyBindings.dict" "$KEYBIND_DIR/DefaultKeyBindings.dict"
+    replace "$MAC_SCRIPT_DIR/DefaultKeyBindings.dict" \
+        "$KEYBIND_DIR/DefaultKeyBindings.dict"
 
     "$BASH" "$MAC_SCRIPT_DIR/mac_defaults.sh"
 fi
