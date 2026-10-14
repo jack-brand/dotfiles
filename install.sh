@@ -8,6 +8,21 @@
 
 set -euo pipefail
 
+YES=false
+
+while (($#)); do
+    case "$1" in
+        "-y"|"--yes")
+            YES=true
+            ;;
+        *)
+            printf 'Unknown option: %s\n' "$1" >&2
+            exit 1
+            ;;
+    esac
+    shift
+done
+
 SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
 
 git -C "$SCRIPT_DIR" submodule update --init --recursive
@@ -21,21 +36,25 @@ replace() {
     local src="$1"
     local dst="$2"
 
-    if [[ -e "$dst" || -L "$dst" ]]; then
-        printf 'Replace %s with %s? [y/N] ' \
-            "${dst/#$HOME/~}" \
-            "${src/#$HOME/~}"
-        read -r reply
+    local src_print="${src/#$HOME/~}"
+    local dst_print="${dst/#$HOME/~}"
 
-        [[ "$reply" == [yY] ]] || {
-            printf 'Skipped %s\n' "${dst/#$HOME/\~}"
-            return
-        }
+    if [[ -e "$dst" || -L "$dst" ]]; then
+        if [[ "$YES" != true ]]; then
+            printf 'Replace %s with %s? [y/N] ' "$dst_print" "$src_print"
+            read -r reply
+
+            [[ "$reply" == [yY] ]] || {
+                printf 'Skipped %s\n' "$dst_print"
+                return
+            }
+        fi
 
         rm -rf "$dst"
     fi
 
     ln -s "$src" "$dst"
+    printf 'Linked %s -> %s\n' "$dst_print" "$src_print"
 }
 
 # Git
@@ -52,9 +71,8 @@ BASH_DIR="$CONFIG_DIR/bash"
 mkdir -p "$BASH_DIR"
 
 replace "$SCRIPT_BASH_DIR/bashrc" "$BASH_DIR/bashrc"
-if [[ -f "$HOME/.bashrc" ]]; then
-    rm "$HOME/.bashrc"
-fi
+
+rm -f "$HOME/.bashrc"
 ln -s "$BASH_DIR/bashrc" "$HOME/.bashrc"
 
 # Zsh
@@ -132,8 +150,6 @@ mkdir -p "$SPOTATUI_DIR"
 
 replace "$SCRIPT_DIR/config/spotatui/config.yml" "$SPOTATUI_DIR/config.yml" 
 
-# License: MIT
-
 # Other
 
 for path in "$SCRIPT_DIR/config"/*; do
@@ -148,11 +164,23 @@ done
 
 # Bin
 
-for path in "$SCRIPT_DIR/bin"/*; do
-    name="${path##*/}"
-    replace "$path" "$HOME/.local/bin/$name"
-    chmod +x "$name"
+for script_path in "$SCRIPT_DIR/bin"/*; do
+    name="${script_path##*/}"
+    path="$HOME/.local/bin/$name"
+    replace "$script_path" "$path"
+    chmod +x "$path"
 done
+
+# Wallpapers
+
+if [[ "$(uname)" == "Darwin" ]]; then
+    PICS_DIR="$HOME/Pictures"
+else
+    PICS_DIR="$HOME/pictures"
+fi
+mkdir -p "$PICS_DIR"
+
+replace "$SCRIPT_DIR/wallpapers" "$PICS_DIR/wallpapers" 
 
 # MacOS
 
