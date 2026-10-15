@@ -74,10 +74,14 @@ SCRIPT_BASH_DIR="$SCRIPT_DIR/config/bash"
 BASH_DIR="$CONFIG_DIR/bash"
 mkdir -p "$BASH_DIR"
 
-replace "$SCRIPT_BASH_DIR/bashrc" "$BASH_DIR/bashrc"
+for name in 'bashrc' 'bash_profile'; do
+    replace "$SCRIPT_BASH_DIR/$name" "$BASH_DIR/$name"
+    if [[ -f "$HOME/.$name" ]]; then
+        rm "$HOME/.$name"
+    fi
+done
 
-rm -f "$HOME/.bashrc"
-ln -s "$BASH_DIR/bashrc" "$HOME/.bashrc"
+ln -s "$BASH_DIR/bash_profile" "$HOME/.bash_profile"
 
 # Zsh
 
