@@ -1,9 +1,2 @@
-if [ -f "$XDG_CONFIG_HOME/shell/env.sh" ]; then
-    source "XDG_CONFIG_HOME/shell/env.sh"
-fi
-
-export BDOTDIR="{$XDG_CONFIG_HOME:-$HOME/.config}/bash"
-
-if [ -f "$BDOTDIR/bashrc" ]; then
-    source "$BDOTDIR/bashrc"
-fi 
+source "XDG_CONFIG_HOME/shell/env.sh"
+source "$XDG_CONFIG_HOME/bash/bashrc"

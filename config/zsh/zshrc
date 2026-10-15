@@ -29,7 +29,7 @@ zstyle ':completion:*' squeeze-slashes false # completion: allow /*/ expansion
 
 # Plugins
 
-ZPLUGDIR="{$ZDOTDIR:-$HOME/.zsh}/plugins"
+ZPLUGDIR="$ZDOTDIR/plugins"
 
 source "$ZPLUGDIR/fzf-tab/fzf-tab.zsh"
 
@@ -49,7 +49,8 @@ bindkey '^j' history-substring-search-down
 
 # History
 
-HISTFILE="{$XDG_CACHE_HOME/:-$HOME/.}zsh_history"
+mkdir -p "$XDG_CACHE_HOME"
+HISTFILE="$XDG_CACHE_HOME/zsh_history"
 HISTCONTROL=ignoreboth
 HISTSIZE=5000
 SAVEHIST=5000
@@ -66,22 +67,22 @@ bindkey '^h' backward-kill-word
 
 # Prompt
 
-# reset: "\e[0m"
-# red: "\e[0;31m"
-# green: "\e[0;32m"
-# blue: "\e[0;34m"
-# magenta: "\e[0;35m"
-# brightblack: "\e[0;90m"
+# reset: "%f"
+# red: "%F{1}"
+# green: "%F{2}"
+# blue: "%F{4}"
+# magenta: "%F{5}"
+# brightblack: "%F{8}"
 
 VIRTUAL_ENV_DISABLE_PROMPT=1
 
 PS1=$'\n'
 
 # (venv)
-PS1+='#{VIRTUAL_ENV:+(\e[0;90m$(basename "$VIRTUAL_ENV")\e[0m) }'
+PS1+='${VIRTUAL_ENV:+(}%F{8}${VIRTUAL_ENV:+${VIRTUAL_ENV:t}}%f${VIRTUAL_ENV:+) }'
 
 # [dir]
-PS1+='[%~] '
+PS1+="[%~] "
 
 # git_branch
 #PS1+='$(branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); [[ -n $branch ]] && echo "\e[0;90m$branch\e[0m")'
@@ -89,10 +90,10 @@ PS1+='[%~] '
 PS1+=$'\n'
 
 # user@host
-#PS1+='\u@\h '
+#PS1+="\u@\h "
 
 # prompt_char
-PS1+='\e[0;32m\%\e[0m '
+PS1+='%F{2}%#%f '
 
 
 # External programs

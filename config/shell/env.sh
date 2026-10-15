@@ -61,17 +61,19 @@ fi
 
 # MacOS
 if [[ "$(uname)" == "Darwin" ]]; then
-    ARCH="$(uname -m)" 
- 
     # Homebrew
-    if [[ "$ARCH" == "arm64" ]]; then
-        BREWDIR="/opt/homebrew"
-    elif [[ "$ARCH" == "x86_64" ]]; then
-        BREWDIR="/usr/local"
-    else
-        echo "ERROR: ${(%):-%N} :: \`uname -m\` is neither arm64 nor x86_64"
-        exit 1
-    fi
+    case "$(uname -m)" in
+        "arm64")
+            BREWDIR="/opt/homebrew"
+            ;;
+        "x86_64")
+            BREWDIR="/usr/local"
+            ;;
+        *)
+            echo "ERROR: ${(%):-%N} : \`uname -m\` is neither arm64 nor x86_64"
+            exit 1
+            ;;
+    esac
 
     if [[ -d "$BREWDIR" ]]; then
         if [[ -x "$BREWDIR/bin/brew" ]]; then
@@ -82,14 +84,6 @@ if [[ "$(uname)" == "Darwin" ]]; then
             export PATH="$BREWDIR/opt/vim/bin:$PATH"
         fi
 
-        if [[ -d "$BREWDIR/share/zsh" ]]; then
-            fpath=(
-                "$BREWDIR/share/zsh/functions"
-                "$BREWDIR/share/zsh/site-functions"
-                $fpath
-            )
-        fi
-
         export HOMEBREW_NO_AUTO_UPDATE=1
     fi
 
@@ -97,4 +91,8 @@ if [[ "$(uname)" == "Darwin" ]]; then
     if [[ -d "/Applications/Wolfram.app/Contents/MacOS" ]]; then
         export PATH="$PATH:/Applications/Wolfram.app/Contents/MacOS"
     fi
+fi
+
+if [[ -f "$HOME/.cargo/env" ]]; then
+    source "$HOME/.cargo/env"
 fi

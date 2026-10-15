@@ -11,7 +11,7 @@ shopt -s extglob
 
 # History
 
-HISTFILE="{$XDG_CACHE_HOME/:-$HOME/.}bash_history"
+HISTFILE="$XDG_CACHE_HOME/bash_history"
 HISTCONTROL=ignoredups
 HISTSIZE=5000
 HISTFILESIZE=5000
@@ -19,8 +19,12 @@ HISTFILESIZE=5000
 
 # Completion
 
-if . /etc/bash/bash_completion 2>/dev/null; then
-    . "{$BDOTDIR:-$HOME}.bash_completion" 2>/dev/null
+if [[ -f /etc/bash/bash_completion ]]; then
+    source /etc/bash/bash_completion
+fi
+
+if [[ -f "$XDG_CONFIG_HOME/bash/bash_completion" ]]; then
+    source "$XDG_CONFIG_HOME/bash/bash_completion"
 fi
 
 
@@ -57,6 +61,4 @@ PS1+='\e[0;32m\$\e[0m '
 
 # Aliases
 
-if [ -f "$XDG_CONFIG_HOME/shell/aliases.sh" ]; then
-    source "$XDG_CONFIG_HOME/shell/aliases.sh"
-fi
+source "$XDG_CONFIG_HOME/shell/aliases.sh"
