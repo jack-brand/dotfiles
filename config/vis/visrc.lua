@@ -45,31 +45,52 @@ end
 function clone_and_require(repo)
     local plugin_name = 'plugins/' .. repo:match('([^/]+)$')
     local path = vis_dir .. '/' .. plugin_name
-    local exists = os.execute(
-        '[ -d ' .. shellescape(path .. '/.git') .. ' ]'
-    )
-    -- Lua 5.1: Returns 0 on success and nonzero on failure
-    -- Lua >=5.2: Returns true on success and nil on failure
-    if exists ~= true and exists ~= 0 then
-        local ok = os.execute('git clone --depth=1 https://' .. repo .. ' ' .. shellescape(path))
-        if ok ~= true and ok ~= 0 then
-            error('Failed to clone plugin: ' .. repo)
+
+    local function clone_plugin()
+        local exists = os.execute(
+            '[ -d ' .. shellescape(path .. '/.git') .. ' ]'
+        )
+
+        -- Lua 5.1: Returns 0 on success and nonzero on failure
+        -- Lua >=5.2: Returns true on success and nil on failure
+        if not exists then
+            local ok = os.execute('git clone --depth=1 https://' .. repo .. ' ' .. shellescape(path))
+
+            if not ok then
+                error('Failed to clone plugin: ' .. repo)
+            end
         end
+
+        package.path = path .. '/?.lua;'
+            .. path .. '/?/init.lua;'
+            .. package.path
+
+        return require(plugin_name)
     end
-    package.path = path .. '/?.lua;'
-        .. path .. '/?/init.lua;'
-        .. package.path
-    return require(plugin_name)
+
+    local ok, result = pcall(clone_plugin)
+
+    if not ok then
+        io.stderr:write(
+            'WARN: Failed to load plugin ' .. repo .. ': ' .. tostring(result) .. '\n'
+        )
+        return nil
+    end
+
+    return result
 end
 
 function plugin_update()
     local plugin_list = io.popen(
-        'find ' .. shellescape(vis_dir .. '/plugins') .. ' -mindepth 1 -maxdepth 1 -type d -print'
+        'find ' .. shellescape(vis_dir .. '/plugins')
+        .. ' -mindepth 1 -maxdepth 1 -type d -print'
     )
+
     if not plugin_list then
         print('ERROR: PluginUpdate: Could not enumerate plugins')
         return
     end
+
     for path in plugin_list:lines() do
         if os.execute('[ -d ' .. shellescape(path .. '/.git') .. ' ]') then
             local plugin_name = path:match('([^/]+)$')
@@ -99,108 +120,117 @@ local follow_link = clone_and_require('git.sr.ht/~mcepl/vis-jump')
 local goto_file = clone_and_require('repo.or.cz/vis-goto-file.git')
 
 local fzf_open = clone_and_require('git.sr.ht/~mcepl/vis-fzf-open')
-fzf_open.fzf_path = "FZF_DEFAULT_COMMAND='rg --files --hidden --glob \"!.git/*\"' fzf"
-fzf_open.fzf_args = "--multi --wrap --height=50% --preview='bat --style-numbers --color=always {}'"
-vis.events.subscribe(vis.events.INIT, function()
-    vis:command('map! normal <D-p> :fzf<Enter>')  -- super+p
-end)
+
+if fzf_open then
+    fzf_open.fzf_path = "FZF_DEFAULT_COMMAND='rg --files --hidden --glob \"!.git/*\"' fzf"
+    fzf_open.fzf_args = "--multi --wrap --height=50% --preview='bat --style-numbers --color=always {}'"
+
+    vis.events.subscribe(vis.events.INIT, function()
+        -- super+p
+        vis:command('map! normal <D-p> :fzf<Enter>')
+    end)
+end
 
 local commentary = clone_and_require('github.com/Nomarian/vis-commentary')
 
 local colorizer = clone_and_require('github.com/thimc/vis-colorizer')
-colorizer.three = false
-colorizer.six = true
+
+if colorizer then
+    colorizer.three = false
+    colorizer.six = true
+end
 
 local lsp = clone_and_require('gitlab.com/muhq/vis-lspc')
 
-lsp.logging = true
-
-lsp.highlight_diagnostics = true
-
-lsp.ls_map.c = {
-    name = 'clangd',
-    cmd = 'clandg --background-index',
-}
-
-lsp.ls_map.cpp = {
-    name = 'clangd',
-    cmd = 'clandg --background-index',
-}
-
-lsp.ls_map.rust = {
-    name = 'rust_analyzer',
-    cmd = 'rust-analyzer',
-    roots = {'Cargo.toml'},
-}
-
-lsp.ls_map.fortran = {
-    name = 'fortls',
-    cmd = 'fortls',
-}
-
-lsp.ls_map.markdown = {
-    name = 'marksman',
-    cmd = 'marksman server',
-    syncInit = true,
-}
-
-lsp.ls_map.html = {
-    name = 'superhtml',
-    cmd = 'superhtml lsp',
-}
-
-lsp.ls_map.tex = {
-    name = 'texlab',
-    cmd = 'texlab',
-}
-
-lsp.ls_map.toml = {
-    name = 'taplo',
-    cmd = 'taplo',
-}
-
-lsp.ls_map.bib = {
-    name = 'citation-langserver',
-    cmd = 'citation-langserver',
-}
-
-lsp.ls_map.quarto = {
-    name = 'ltex-ls-plus',
-    cmd = 'ltex-ls-plus',
-}
-
-lsp.ls_map.rst = {
-    name = 'ltex-ls-plus',
-    cmd = 'ltex-ls-plus',
-}
-
-lsp.ls_map.org = {
-    name = 'ltex-ls-plus',
-    cmd = 'ltex-ls-plus',
-}
-
-lsp.ls_map.typst = {
-    name = 'ltex-ls-plus',
-    cmd = 'ltex-ls-plus',
-}
-
-lsp.ls_map.asciidoc = {
-    name = 'ltex-ls-plus',
-    cmd = 'ltex-ls-plus',
-}
-
-lsp.ls_map.javascript = {
-    name = 'quick-lint-js',
-    cmd = 'quick-lint-js --lsp-server',
-}
-
-lsp.ls_map.mma = {
-    name = 'wolfram',
-    cmd = 'WolframKernel -noinit -noprompt -nopaclet -nostartuppaclets -noicon '
-    .. '-run \'Needs["LSPServer`"];LSPServer`StartServer[]\'',
-}
-
+if lsp then
+    lsp.logging = true
+    lsp.highlight_diagnostics = true
+    
+    lsp.ls_map.c = {
+        name = 'clangd',
+        cmd = 'clandg --background-index',
+    }
+    
+    lsp.ls_map.cpp = {
+        name = 'clangd',
+        cmd = 'clandg --background-index',
+    }
+    
+    lsp.ls_map.rust = {
+        name = 'rust_analyzer',
+        cmd = 'rust-analyzer',
+        roots = {'Cargo.toml'},
+    }
+    
+    lsp.ls_map.fortran = {
+        name = 'fortls',
+        cmd = 'fortls',
+    }
+    
+    lsp.ls_map.markdown = {
+        name = 'marksman',
+        cmd = 'marksman server',
+        syncInit = true,
+    }
+    
+    lsp.ls_map.html = {
+        name = 'superhtml',
+        cmd = 'superhtml lsp',
+    }
+    
+    lsp.ls_map.tex = {
+        name = 'texlab',
+        cmd = 'texlab',
+    }
+    
+    lsp.ls_map.toml = {
+        name = 'taplo',
+        cmd = 'taplo',
+    }
+    
+    lsp.ls_map.bib = {
+        name = 'citation-langserver',
+        cmd = 'citation-langserver',
+    }
+    
+    lsp.ls_map.quarto = {
+        name = 'ltex-ls-plus',
+        cmd = 'ltex-ls-plus',
+    }
+    
+    lsp.ls_map.rst = {
+        name = 'ltex-ls-plus',
+        cmd = 'ltex-ls-plus',
+    }
+    
+    lsp.ls_map.org = {
+        name = 'ltex-ls-plus',
+        cmd = 'ltex-ls-plus',
+    }
+    
+    lsp.ls_map.typst = {
+        name = 'ltex-ls-plus',
+        cmd = 'ltex-ls-plus',
+    }
+    
+    lsp.ls_map.asciidoc = {
+        name = 'ltex-ls-plus',
+        cmd = 'ltex-ls-plus',
+    }
+    
+    lsp.ls_map.javascript = {
+        name = 'quick-lint-js',
+        cmd = 'quick-lint-js --lsp-server',
+    }
+    
+    lsp.ls_map.mma = {
+        name = 'wolfram',
+        cmd = 'WolframKernel -noinit -noprompt -nopaclet -nostartuppaclets -noicon '
+        .. '-run \'Needs["LSPServer`"];LSPServer`StartServer[]\'',
+    }
+end
 
 -- Local plugins
 
 local complete_filename = require('plugins/complete-filename')
+
