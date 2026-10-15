@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/bin/env sh
 set -eu
 
 for ansi_code in {40..47}; do
