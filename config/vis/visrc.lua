@@ -45,16 +45,20 @@ end
 function clone_and_require(repo)
     local plugin_name = 'plugins/' .. repo:match('([^/]+)$')
     local path = vis_dir .. '/' .. plugin_name
-    local plugin_already_there = os.execute(
+    local exists = os.execute(
         '[ -d ' .. shellescape(path .. '/.git') .. ' ]'
     )
     -- Lua 5.1: Returns 0 on success and nonzero on failure
     -- Lua >=5.2: Returns true on success and nil on failure
-    if plugin_already_there ~= true and plugin_already_there ~= 0 then
-        os.execute(
-            'git clone --depth=1 https://' .. repo .. ' ' .. shellescape(path)
-        )
+    if exists ~= true and exists ~= 0 then
+        local ok = os.execute('git clone --depth=1 https://' .. repo .. ' ' .. shellescape(path))
+        if ok ~= true and ok ~= 0 then
+            error('Failed to clone plugin: ' .. repo)
+        end
     end
+    package.path = path .. '/?.lua;'
+        .. path .. '/?/init.lua;'
+        .. package.path
     return require(plugin_name)
 end
 
