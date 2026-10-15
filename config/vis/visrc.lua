@@ -10,7 +10,7 @@ require('vis')
 
 -- Global
 vis.events.subscribe(vis.events.INIT, function()
-    vis:command("set theme gruber_darker")
+    vis:command("set theme gruber_darker_vis")
 end)
 
 -- Per-window
