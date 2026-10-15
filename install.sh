@@ -28,7 +28,7 @@ done
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
 
-git -C "$SCRIPT_DIR" submodule update --init --recursive
+git -C "$SCRIPT_DIR" submodule update --init --recursive --remote
 
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 mkdir -p "$CONFIG_DIR"

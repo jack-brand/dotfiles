@@ -1,1 +1,1 @@
-../../../../gruber-darker/gruber_darker_vis.lua
+../../../gruber-darker/gruber_darker_vis.lua
