@@ -145,17 +145,16 @@ for subdir in 'plugins' 'themes'; do
     done
 done
 
-# Spotatui
-# (manually symlinked so that the private and unique
-# `spotatui/client.yml` is not exposed in the repo)
+# Github
+# (manually symlink so that hosts.yml is not exposed in the repo)
 
-manually_symlinked+=('spotatui')
+manually_symlinked+=('gh')
 
-SPOTATUI_DIR="$CONFIG_DIR/spotatui"
-mkdir -p "$SPOTATUI_DIR"
+GITHUB_DIR="$CONFIG_DIR/gh"
+mkdir -p "$GITHUB_DIR"
 
-replace "$SCRIPT_DIR/config/spotatui/config.yml" \
-    "$SPOTATUI_DIR/config.yml"
+replace "$SCRIPT_DIR/config/gh/config.yml" \
+    "$GITHUB_DIR/config.yml"
 
 # Other
 
