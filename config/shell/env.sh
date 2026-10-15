@@ -41,7 +41,9 @@ export FZF_DEFAULT_OPTS="--multi --wrap --style minimal --color 16 --height 30%"
 # export FZF_DEFAULT_OPTS+="--preview='bat -p --style=numbers --color=always {}'"
 
 latest_version() {
-    printf '%s\n' "$1"/*(:t) |
+    for path in "$1"/*; do
+        printf '%s\n' "${path##*/}"
+    done |
         grep -E '^[0-9]+(\.[0-9]+)+$' |
         sort -V |
         tail -n 1

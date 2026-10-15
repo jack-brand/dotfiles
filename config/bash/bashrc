@@ -42,7 +42,8 @@ VIRTUAL_ENV_DISABLE_PROMPT=1
 PS1=$'\n'
 
 # (venv)
-PS1+='#{VIRTUAL_ENV:+(\e[0;90m$(basename "$VIRTUAL_ENV")\e[0m) }'
+#PS1+='${VIRTUAL_ENV:+(\e[0;90m"${VIRTUAL_ENV##*/}")\e[0m) }'
+PS1+='\[\e[0;90m\]$([[ -n ${VIRTUAL_ENV:-} ]] && printf "(%s) " "${VIRTUAL_ENV##*/}")\[\e[0m\]'
 
 # [dir]
 PS1+='[\w]'
