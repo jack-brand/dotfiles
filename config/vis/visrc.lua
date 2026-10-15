@@ -38,10 +38,19 @@ end)
 
 local vis_dir = (os.getenv('XDG_CONFIG_HOME') or (os.getenv('HOME') .. '/.config')) .. '/vis'
 
+local function shellescape(s)
+    return "'" .. s:gsub("'", "'\''") .. "'"
+end
+
 function clone_and_require(repo)
     local plugin_name = 'plugins/' .. repo:match('([^/]+)$')
     local path = vis_dir .. '/' .. plugin_name
-    if not os.execute('[ -d ' .. shellescape(path .. '/.git') .. ' ]') then
+    local plugin_already_there = os.execute(
+        '[ -d ' .. shellescape(path .. '/.git') .. ' ]'
+    )
+    -- Lua 5.1: Returns 0 on success and nonzero on failure
+    -- Lua >=5.2: Returns true on success and nil on failure
+    if plugin_already_there ~= true and plugin_already_there ~= 0 then
         os.execute(
             'git clone --depth=1 https://' .. repo .. ' ' .. shellescape(path)
         )
