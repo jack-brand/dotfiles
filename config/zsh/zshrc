@@ -113,7 +113,5 @@ fi
 
 # Aliases
 
-if [ -f "$XDG_CONFIG_HOME/shell/aliases" ]; then
-    source "$XDG_CONFIG_HOME/shell/aliases"
-fi
+source "$XDG_CONFIG_HOME/shell/aliases.sh"
 
