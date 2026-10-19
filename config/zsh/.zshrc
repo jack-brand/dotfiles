@@ -1,10 +1,20 @@
+mkdir -p "$XDG_CACHE_HOME/zsh"
+
 # Modules
 
-autoload -Uz compinit && compinit
+autoload -Uz compinit
+compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
 autoload -Uz colors && colors
 autoload -Uz zmv
 # autoload -Uz add-zsh-hook
 
+
+# History
+
+HISTFILE="$XDG_CACHE_HOME/zsh/zsh_history"
+HISTCONTROL=ignoreboth
+HISTSIZE=5000
+SAVEHIST=5000
 
 # Options
 
@@ -29,7 +39,7 @@ zstyle ':completion:*' squeeze-slashes false # completion: allow /*/ expansion
 
 # Plugins
 
-ZPLUGDIR="$ZDOTDIR/plugins"
+ZPLUGDIR="$XDG_DATA_HOME/zsh"
 
 source "$ZPLUGDIR/fzf-tab/fzf-tab.zsh"
 
@@ -45,15 +55,6 @@ HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND=(bg=8)
 HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND=(bg=1)
 bindkey '^k' history-substring-search-up
 bindkey '^j' history-substring-search-down
-
-
-# History
-
-mkdir -p "$XDG_CACHE_HOME"
-HISTFILE="$XDG_CACHE_HOME/zsh_history"
-HISTCONTROL=ignoreboth
-HISTSIZE=5000
-SAVEHIST=5000
 
 
 # Keybinds

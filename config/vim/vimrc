@@ -52,7 +52,9 @@ set clipboard=unnamed,unnamedplus
 
 " Plugins
 
-let s:plugin_dir = expand('$HOME/.config/vim/plugins')
+let s:plugin_dir = (empty($XDG_DATA_HOME)
+            \ ? expand('$HOME/.local/share')
+            \ : $XDG_DATA_HOME) . '/vim'
 
 if !isdirectory(s:plugin_dir)
     call mkdir(s:plugin_dir, 'p')
@@ -112,18 +114,18 @@ call s:clone('iamcco/markdown-preview.nvim')
 
 if !isdirectory(s:plugin_dir . '/markdown-preview.nvim/app/bin')
     if executable('yarn')
-        let l:output = system(
-                    \ 'cd ' . shellescape(s:plugin_dir . '/markdown-preview.nvim/app/bin')
+        let s:build_output = execute
+                    \ '!cd ' . shellescape(s:plugin_dir . '/markdown-preview.nvim')
                     \ . ' && export NODE_OPTIONS=--openssl-legacy-provider'
-                    \ . ' && yarn install && yarn build')
+                    \ . ' && yarn install && yarn build'
 
         if v:shell_error
-            echoerr 'ERROR: vimrc: Failed to build markdown-preview.nvim'
-            echomsg l:output
+            echoerr 'ERROR: Failed to build markdown-preview.nvim'
+            echomsg s:build_output
         endif
     else
         echohl WarningMsg
-        echomsg 'WARN: vimrc: markdown-preview.nvim requires yarn executable on $PATH'
+        echomsg 'WARN: markdown-preview.nvim requires yarn executable on $PATH'
         echohl None
     endif
 endif
@@ -139,7 +141,7 @@ colorscheme gruber-darker
 " Languages
 " cf. https://langserver.org/
 " cf. https://microsoft.github.io/language-server-protocol/implementors/servers/
-let s:lspServers = [
+let s:lsp_servers = [
     \ #{
         \ name: 'rust-analyzer',
         \ filetype: ['rust'],
@@ -217,13 +219,13 @@ let s:lspServers = [
         \ ]
     \ }
 \ ]
-autocmd User LspSetup call LspAddServer(s:lspServers)
+autocmd User LspSetup call LspAddServer(s:lsp_servers)
 
 " Completion
 autocmd FileType php setlocal omnifunc=lsp#complete
 
 " Diagnostics
-let s:lspOpts = #{
+let s:lsp_opts = #{
     \ autoHighlightDiags: v:true,
     \ showDiagWithSign: v:true,
     \ diagSignErrorText: '✘',
@@ -231,7 +233,7 @@ let s:lspOpts = #{
     \ diagSignInfoText: '»',
     \ diagSignHintText: '⚑',
 \ }
-autocmd User LspSetup call LspOptionsSet(s:lspOpts)
+autocmd User LspSetup call LspOptionsSet(s:lsp_opts)
 
 
 " Functions

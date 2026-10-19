@@ -6,7 +6,7 @@ require('vis')
 
 -- Config --
 
-    local leader = " "
+local leader = " "
 
 -- Global
 vis.events.subscribe(vis.events.INIT, function()
@@ -36,15 +36,28 @@ end)
 -- cf. <https://github.com/martanne/vis/wiki/Plugins>
 -- cf. <https://erf.github.io/vis-plugins>
 
-local vis_dir = (os.getenv('XDG_CONFIG_HOME') or (os.getenv('HOME') .. '/.config')) .. '/vis'
+local plugin_dir = (os.getenv('XDG_DATA_HOME') or (os.getenv('HOME') .. '/.local/share')) .. '/vis'
 
 local function shellescape(s)
     return "'" .. s:gsub("'", "'\''") .. "'"
 end
 
 function clone_and_require(repo)
-    local plugin_name = 'plugins/' .. repo:match('([^/]+)$')
-    local path = vis_dir .. '/' .. plugin_name
+    local plugin_name = repo:match('([^/]+)$')
+    local path = plugin_dir .. '/' .. plugin_name
+
+    local depth
+    local supports_shallow_clone = {
+        ['github.com'] = true,
+        ['gitlab.com'] = true,
+        ['codeberg.org'] = true,
+    }
+    local host = repo:match('^[^/]+')
+    if supports_shallow_clone[host] then
+        depth = ' --depth 1 '
+    else
+        depth = ' '
+    end
 
     local function clone_plugin()
         local exists = os.execute(
@@ -54,7 +67,7 @@ function clone_and_require(repo)
         -- Lua 5.1: Returns 0 on success and nonzero on failure
         -- Lua >=5.2: Returns true on success and nil on failure
         if not exists then
-            local ok = os.execute('git clone --depth=1 https://' .. repo .. ' ' .. shellescape(path))
+            local ok = os.execute('git clone' .. depth .. 'https://' .. repo .. ' ' .. shellescape(path))
 
             if not ok then
                 error('Failed to clone plugin: ' .. repo)
@@ -82,8 +95,7 @@ end
 
 function plugin_update()
     local plugin_list = io.popen(
-        'find ' .. shellescape(vis_dir .. '/plugins')
-        .. ' -mindepth 1 -maxdepth 1 -type d -print'
+        'find ' .. shellescape(plugin_dir) .. ' -mindepth 1 -maxdepth 1 -type d -print'
     )
 
     if not plugin_list then
@@ -111,13 +123,13 @@ end
 
 vis:command_register('PluginUpdate', plugin_update)
 
-local modal_colors = clone_and_require('git.symlinx.net/vis-modal')
+clone_and_require('git.symlinx.net/vis-modal')
 
--- local autoclose = clone_and_require('codeberg.org/luxanna/vis-autoclose')
+-- clone_and_require('codeberg.org/luxanna/vis-autoclose')
 
-local follow_link = clone_and_require('git.sr.ht/~mcepl/vis-jump')
+ clone_and_require('git.sr.ht/~mcepl/vis-jump')
 
-local goto_file = clone_and_require('repo.or.cz/vis-goto-file.git')
+clone_and_require('repo.or.cz/vis-goto-file.git')
 
 local fzf_open = clone_and_require('git.sr.ht/~mcepl/vis-fzf-open')
 
@@ -131,7 +143,7 @@ if fzf_open then
     end)
 end
 
-local commentary = clone_and_require('github.com/Nomarian/vis-commentary')
+clone_and_require('github.com/Nomarian/vis-commentary')
 
 local colorizer = clone_and_require('github.com/thimc/vis-colorizer')
 
@@ -232,5 +244,5 @@ end
 
 -- Local plugins
 
-local complete_filename = require('plugins/complete-filename')
+require('complete-filename')
 

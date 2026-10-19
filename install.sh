@@ -17,6 +17,9 @@ while (($#)); do
         "-y"|"--yes")
             YES=true
             ;;
+        "--i-am-jack")
+            JACK=true
+            ;;
         *)
             printf '%s: Unknown option: %s\n' \
                 "$SCRIPT_NAME" "$1" >&2
@@ -30,8 +33,11 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
 
 git -C "$SCRIPT_DIR" submodule update --init --recursive --remote
 
-CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
-mkdir -p "$CONFIG_DIR"
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+mkdir -p "$XDG_CONFIG_HOME"
+
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+mkdir -p "$XDG_DATA_HOME"
 
 manually_symlinked=()
 
@@ -63,19 +69,19 @@ replace() {
 
 # Git
 
-replace "$SCRIPT_DIR/gitconfig" "$HOME/.gitconfig"
+if $JACK; then
+    replace "$SCRIPT_DIR/config/git/gitconfig" "$HOME/.gitconfig"
+fi
 
 # Bash
 
 manually_symlinked+=('bash')
 
-SCRIPT_BASH_DIR="$SCRIPT_DIR/config/bash"
+BASH_DIR="$XDG_CONFIG_HOME/bash"
 
-BASH_DIR="$CONFIG_DIR/bash"
-mkdir -p "$BASH_DIR"
+replace "$SCRIPT_DIR/config/bash" "$BASH_DIR"
 
 for name in 'bashrc' 'bash_profile'; do
-    replace "$SCRIPT_BASH_DIR/$name" "$BASH_DIR/$name"
     if [[ -f "$HOME/.$name" ]]; then
         rm "$HOME/.$name"
     fi
@@ -87,13 +93,11 @@ ln -s "$BASH_DIR/bash_profile" "$HOME/.bash_profile"
 
 manually_symlinked+=('zsh')
 
-SCRIPT_ZSH_DIR="$SCRIPT_DIR/config/zsh"
+ZSH_DIR="$XDG_CONFIG_HOME/zsh"
 
-ZSH_DIR="$CONFIG_DIR/zsh"
-mkdir -p "$ZSH_DIR"
+replace "$SCRIPT_DIR/config/zsh" "$ZSH_DIR"
 
 for name in 'zshrc' 'zprofile' 'zshenv'; do
-    replace "$SCRIPT_ZSH_DIR/$name" "$ZSH_DIR/.$name"
     if [[ -f "$HOME/.$name" ]]; then
         rm "$HOME/.$name"
     fi
@@ -101,12 +105,14 @@ done
 
 printf 'export ZDOTDIR=\"%s\"\n' "$ZSH_DIR" > "$HOME/.zshenv"
 
-clone_zsh_plugin() {
-    mkdir -p "$ZSH_DIR/plugins"
 
+ZSH_PLUG_DIR="$XDG_DATA_HOME/zsh"
+mkdir -p "$ZSH_PLUG_DIR"
+
+clone_zsh_plugin() {
     local repo="$1"
     local name="${repo##*/}"
-    local path="$ZSH_DIR/plugins/$name"
+    local path="$ZSH_PLUG_DIR/$name"
 
     if [[ ! -d "$path" ]]; then
         git clone --depth=1 "https://github.com/$repo" "$path"
@@ -118,43 +124,12 @@ clone_zsh_plugin "zsh-users/zsh-autosuggestions"
 clone_zsh_plugin "zsh-users/zsh-syntax-highlighting"
 clone_zsh_plugin "zsh-users/zsh-history-substring-search"
 
-# Vim
-
-manually_symlinked+=('vim')
-
-SCRIPT_VIM_DIR="$SCRIPT_DIR/config/vim"
-
-VIM_DIR="$CONFIG_DIR/vim"
-mkdir -p "$VIM_DIR"
-
-replace "$SCRIPT_VIM_DIR/vimrc" "$VIM_DIR/vimrc"
-
-# Vis
-
-manually_symlinked+=('vis')
-
-SCRIPT_VIS_DIR="$SCRIPT_DIR/config/vis"
-
-VIS_DIR="$CONFIG_DIR/vis"
-mkdir -p "$VIS_DIR"
-
-replace "$SCRIPT_VIS_DIR/visrc.lua" "$VIS_DIR/visrc.lua"
-
-for subdir in 'plugins' 'themes'; do
-    mkdir -p "$VIS_DIR/$subdir"
-    
-    for path in "$SCRIPT_VIS_DIR/$subdir"/*; do
-        name="${path##*/}"
-        replace "$path" "$VIS_DIR/$subdir/$name"
-    done
-done
-
 # Github
 # (manually symlink so that hosts.yml is not exposed in the repo)
 
 manually_symlinked+=('gh')
 
-GITHUB_DIR="$CONFIG_DIR/gh"
+GITHUB_DIR="$XDG_CONFIG_HOME/gh"
 mkdir -p "$GITHUB_DIR"
 
 replace "$SCRIPT_DIR/config/gh/config.yml" \
@@ -166,10 +141,12 @@ for path in "$SCRIPT_DIR/config"/*; do
     name="${path##*/}"
 
     for excluded in "${manually_symlinked[@]}"; do
-        [[ "$name" == "$excluded" ]] && continue 2
+        if [[ "$name" == "$excluded" ]]; then
+            continue 2
+        fi
     done
 
-    replace "$path" "$CONFIG_DIR/$name"
+    replace "$path" "$XDG_CONFIG_HOME/$name"
 done
 
 # Bin
