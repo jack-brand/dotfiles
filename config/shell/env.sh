@@ -1,4 +1,7 @@
-export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+if [[ -d "$HOME/.local/share/cargo" ]]; then
+    export PATH="$PATH:$HOME/.local/share/cargo/bin"
+fi
+export PATH="$HOME/.local/bin:$PATH"
 
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
@@ -33,8 +36,6 @@ export LESS_TERMCAP_mb=$'\e[5m'     # blink -> blink
 export LESS_TERMCAP_me=$'\e[0m'     # end all
 export LESS_TERMCAP_se=$'\e[0m'     # end standout
 export LESS_TERMCAP_ue=$'\e[0m'     # end underline
-
-export BAT_PAGER="less --raw-control-chars --quit-if-one-screen"
 
 export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*"'
 export FZF_DEFAULT_OPTS="--multi --wrap --style minimal --color 16 --height 30%"

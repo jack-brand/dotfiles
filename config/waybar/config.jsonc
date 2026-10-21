@@ -6,32 +6,30 @@
 {
     "layer": "top", 
     "position": "top", 
-    "height": 30, 
     "spacing": 4, 
 
-    // Choose the order of the modules
     "modules-left": [
         "ext/workspaces"
     ],
     "modules-center": [
         "ext/window"
     ],
-
     "modules-right": [
-        "network",
-        "custom/sep",
         "cpu",
         "custom/sep",
         "memory",
         "custom/sep",
+        "custom/gpu",
+        "custom/sep",
         "disk",
+        "custom/sep",
+        "network",
         "custom/sep",
         "clock",
         "custom/sep",
         "tray"
     ],
 
-    // Modules configuration
     "ext/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
@@ -43,19 +41,19 @@
     },
     "ext/window" : {
         "max-length": 40,
-        "seperate-outputs": false
+        "separate-outputs": false
     },
     "tray": {
-        // "icon-size": 21,
+        //"icon-size": 21,
         "spacing": 10
-        // "icons": {
-        //   "blueman": "bluetooth",
-        //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
-        // }
+        //"icons": {
+        //  "blueman": "bluetooth",
+        //}
     },
     "clock": {
-        "format": "{H}:{M}:{S}",
-        "format-alt": "{: %d %M %Y}"
+        "format": "{:%H:%M:%S}",
+        "format-alt": "{:%d %b %Y}",
+        "interval": 1
     },
     "cpu": {
         "format": "CPU: {usage}%",
@@ -67,7 +65,8 @@
     "disk": {
         "interval": 60,
         "path": "/",
-        "format": "STOR: {free}"
+        "format": "DISK: {free}",
+        "format-alt": "DISK: {used} / {free}"
     },
     "battery": {
         "states": {
@@ -82,11 +81,16 @@
         "format-icons": ["", "", "", "", ""]
     },
     "network": {
-        "format": "On",
-        "format-disconnected": "Off ⚠"
+        "format": "NET: On",
+        "format-disconnected": "NET: Off"
+    },
+    "custom/gpu": {
+        "format": "{text}",
+        "exec": "gpu-usage-waybar --interval 3000 --text-format \"GPU: {gpu_utilization}%  VRAM: {mem_utilization}%\"",
+        "return-type": "json",
     },
     "custom/sep": {
-        "format" : "|",
-        "interval" : 0
+        "format": " ",
+        "interval": 0
     }
 }

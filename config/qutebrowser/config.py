@@ -2,58 +2,43 @@
 #    bread <https://github.com/BreadOnPenguins/dots>
 #    Tanner Babcock <https://gitlab.com/Babkock/Dotfiles>
 
-# Colours (match with xresources)
+# Colours
+# Format: '#aarrggbb' | '#rrggbb' | '<ansi_color_name>'
 
-# base00 / color0
-black = "#181818"
-# base01 / color1
-red = "#f43841"
-# base02 / color2
-green = "#73c936"
-# base03 / color3
-yellow = "#ffdd33"
-# base04 / color4
-blue= "#96a6c8"
-# base05 / color5
-magenta = "#9e95c7"
-# base06 / color6
-cyan = "#95a99f"
-# base07 / color7
-white= "#e4e4ef"
+black = '#181818'
+red = '#f43841'
+green = '#73c936'
+yellow = '#ffdd33'
+blue= '#96a6c8'
+magenta = '#9e95c7'
+cyan = '#95a99f'
+white= '#e4e4ef'
+brightblack = '#453d41'
+brightred = '#ff4f58'
+brightgreen = '#73c936'
+brightyellow = '#ffdd33'
+brightblue = '#96a6c8'
+brightmagenta = '#9e95c7'
+brightcyan = '#95a99f'
+brightwhite = '#f5f5f5'
 
-# base08 / color8
-brightblack = "#453d41"
-# base09 / color9
-brightred = "#ff4f58"
-# base0A / color10
-brightgreen = "#73c936"
-# base0B / color11
-brightyellow = "#ffdd33"
-# base0C / color12
-brightblue = "#96a6c8"
-# base0D / color13
-brightmagenta = "#9e95c7"
-# base0E / color14
-brightcyan = "#95a99f"
-# base0F / color15
-brightwhite = "#f5f5f5"
+brown = '#cc8c3c'
+darkyellow = '#423d21'
 
-brown = "#cc8c3c"
-darkyellow = "#423d21"
+# BUG: webpage.bg must be fully opaque or fully transparent
+c.colors.webpage.bg = '#00181818'
 
-c.colors.webpage.bg = "#18181880"
-
-c.colors.statusbar.normal.bg = "#00000000"
+c.colors.statusbar.normal.bg = '#00000000'
 c.colors.statusbar.normal.fg = cyan
-c.colors.statusbar.command.bg = "#00000000"
+c.colors.statusbar.command.bg = '#00000000'
 c.colors.statusbar.command.fg = white
-c.colors.statusbar.passthrough.bg = "#00000000"
+c.colors.statusbar.passthrough.bg = '#00000000'
 c.colors.statusbar.passthrough.fg = cyan
-c.colors.statusbar.private.bg = "#00000000"
+c.colors.statusbar.private.bg = '#00000000'
 c.colors.statusbar.private.fg = cyan
 c.colors.statusbar.caret.fg = yellow
 c.colors.statusbar.caret.selection.bg = darkyellow
-c.colors.statusbar.progress.bg = "#00000000"
+c.colors.statusbar.progress.bg = '#00000000'
 c.colors.statusbar.url.fg = brightmagenta
 c.colors.statusbar.url.hover.fg = brightblue
 c.colors.statusbar.url.success.http.fg = brightmagenta
@@ -61,9 +46,9 @@ c.colors.statusbar.url.success.https.fg = brightmagenta
 c.colors.statusbar.url.warn.fg = brown
 c.colors.statusbar.url.error.fg = red
 
-c.colors.tabs.bar.bg = "#00000000"
-c.colors.tabs.even.bg = "#00000000"
-c.colors.tabs.odd.bg = "#00000000"
+c.colors.tabs.bar.bg = '#00000000'
+c.colors.tabs.even.bg = '#00000000'
+c.colors.tabs.odd.bg = '#00000000'
 c.colors.tabs.even.fg = black
 c.colors.tabs.odd.fg = black
 c.colors.tabs.selected.even.bg = black
@@ -97,8 +82,8 @@ c.colors.completion.match.fg = brightwhite
 c.colors.completion.item.selected.match.fg = brightwhite
 c.colors.completion.category.bg = black
 c.colors.completion.category.fg = white
-c.colors.completion.category.border.top = "#00000000"
-c.colors.completion.category.border.bottom = "#00000000"
+c.colors.completion.category.border.top = '#00000000'
+c.colors.completion.category.border.bottom = '#00000000'
 c.colors.completion.item.selected.bg = black
 c.colors.completion.item.selected.fg = white
 c.colors.completion.item.selected.border.top = '#00000000'
@@ -108,13 +93,13 @@ c.colors.completion.scrollbar.fg = brightblack
 
 c.colors.messages.info.bg = black
 c.colors.messages.info.fg = white
-c.colors.messages.info.border = "#00000000"
+c.colors.messages.info.border = '#00000000'
 c.colors.messages.warning.bg = black
 c.colors.messages.warning.fg = white
-c.colors.messages.warning.border = "#00000000"
+c.colors.messages.warning.border = '#00000000'
 c.colors.messages.error.bg = black
 c.colors.messages.error.fg = white
-c.colors.messages.error.border = "#00000000"
+c.colors.messages.error.border = '#00000000'
 
 c.colors.downloads.bar.bg = black
 c.colors.downloads.start.bg = brightgreen
@@ -123,8 +108,8 @@ c.colors.downloads.stop.bg = brightblack
 c.colors.downloads.stop.fg = white
 c.colors.downloads.error.bg = black
 c.colors.downloads.error.fg = white
-c.colors.downloads.system.bg = black
-c.colors.downloads.system.fg = white
+c.colors.downloads.system.bg = 'none'
+c.colors.downloads.system.fg = 'none'
 
 c.colors.tooltip.bg = black
 c.colors.tooltip.fg = white
@@ -145,9 +130,9 @@ c.colors.contextmenu.selected.fg = black
 
 # Appearance
 
-c.fonts.web.size.default = 18
+c.fonts.web.size.default = 16
 c.fonts.default_family = []
-c.fonts.default_size = '18pt'
+c.fonts.default_size = '16pt'
 c.fonts.web.family.fixed = 'monospace'
 c.fonts.web.family.sans_serif = 'monospace'
 c.fonts.web.family.serif = 'monospace'
@@ -158,9 +143,9 @@ c.colors.webpage.darkmode.algorithm = 'lightness-cielab'
 c.colors.webpage.darkmode.policy.images = 'never'
 config.set('colors.webpage.darkmode.enabled', False, 'file://*')
 
-c.tabs.title.format = "{audio}{current_title}"
-c.tabs.title.format_pinned = "{audio}{index}"
-c.tabs.show = "multiple"
+c.tabs.title.format = '{audio}{current_title}'
+c.tabs.title.format_pinned = '{audio}{index}'
+c.tabs.show = 'multiple'
 c.tabs.padding = {
     'top': 5, #3
     'bottom': 5, #4
@@ -169,31 +154,28 @@ c.tabs.padding = {
 }
 c.tabs.indicator.width = 0  # no tab indicators
 c.tabs.width = '7%'
-c.tabs.last_close = "close"
-c.tabs.mode_on_change = "restore"
+c.tabs.last_close = 'close'
+c.tabs.mode_on_change = 'restore'
 c.tabs.favicons.scale = 1.3
 c.tabs.show_switching_delay = 700
 c.tabs.pinned.frozen = False
 
 c.hints.padding = {
-    "left": 4,
-    "right": 4,
-    "top": 3,
-    "bottom": 4
+    'left': 4,
+    'right': 4,
+    'top': 3,
+    'bottom': 4
 }
 
-c.content.user_stylesheets = ["~/.config/qutebrowser/styles/youtube-tweaks.css"]
-c.window.title_format = "{perc}{current_title}"
+c.content.user_stylesheets = ['~/.config/qutebrowser/styles/youtube-tweaks.css']
+c.window.title_format = '{perc}{current_title}'
 c.content.prefers_reduced_motion = True
 c.window.transparent = True
-# c.statusbar.show = "always"
 
 
 # Search behaviour
 
 c.url.open_base_url = True
-c.url.start_pages = [""]
-c.url.default_page = ""
 
 # If you use duckduckgo, you can make use of its built in bangs, of which there are many! <https://duckduckgo.com/bangs>
 c.url.searchengines = {
@@ -215,17 +197,16 @@ c.url.searchengines = {
 
 config.load_autoconfig()
 
-c.content.default_encoding = "utf-8"
+c.content.default_encoding = 'utf-8'
 
-c.statusbar.widgets = ["keypress", "search_match", "url", "progress", "clock"]
+c.statusbar.widgets = ['keypress', 'search_match', 'url', 'progress', 'clock']
 
 c.auto_save.session = True
 c.auto_save.interval = 40000
 
-#config.set("completion.cmd_history_max_items", 0)
-c.completion.height = "30%"
+c.completion.height = '30%'
 c.completion.web_history.max_items = 30
-c.completion.timestamp_format = "%b %a %d %H:%M:%S"
+c.completion.timestamp_format = '%b %a %d %H:%M:%S'
 c.completion.scrollbar.width = 18
 c.completion.shrink = True
 c.completion.open_categories = [
@@ -236,12 +217,12 @@ c.completion.open_categories = [
     'filesystem'
 ]
 
-c.downloads.location.directory = "~/downloads"
-c.downloads.location.prompt = False
+c.downloads.location.directory = '~/downloads'
+c.downloads.location.prompt = True
 c.downloads.prevent_mixed_content = True
-c.downloads.position = "bottom"
+c.downloads.position = 'bottom'
 
-c.prompt.filebrowser = False
+c.prompt.filebrowser = True
 c.prompt.radius = 40
 
 c.input.insert_mode.auto_load = True
@@ -251,17 +232,17 @@ c.input.insert_mode.plugins = True
 c.hints.radius = 30
 c.hints.uppercase = True
 
-c.scrolling.bar = "always"
+c.scrolling.bar = 'always'
 c.scrolling.smooth = False
 
 c.qt.args = [
-    "enable-gpu-rasterization",
-    "use-gl=egl",
-    "ignore-gpu-blocklist",
-    "enable-accelerated-video-decode"
+    'enable-gpu-rasterization',
+    'use-gl=egl',
+    'ignore-gpu-blocklist',
+    'enable-accelerated-video-decode'
 ]
 
-c.qt.chromium.experimental_web_platform_features = "always"
+c.qt.chromium.experimental_web_platform_features = 'always'
 
 #c.fileselect.handler = 'external'
 #c.fileselect.single_file.command = ['footclient', '-e', 'nnn', '-d', '-l', '2', '-U', '-D', '-R', '-i', '-x', '-GQ', '-p', '{}']
@@ -271,24 +252,23 @@ c.qt.chromium.experimental_web_platform_features = "always"
 
 # Privacy
 
-#c.content.private_browsing = True
 c.content.canvas_reading = False
-c.content.webrtc_ip_handling_policy = "default-public-interface-only"
-c.content.cookies.accept = "all"
+c.content.webrtc_ip_handling_policy = 'default-public-interface-only'
+c.content.cookies.accept = 'all'
 c.content.cookies.store = True
 c.content.media.video_capture = True
 c.content.media.audio_capture = True
 c.content.media.audio_video_capture = True
 c.content.notifications.enabled = True
-c.content.notifications.presenter = "libnotify"
+c.content.notifications.presenter = 'libnotify'
 c.content.javascript.enabled = True
-c.content.javascript.clipboard = "access"
+c.content.javascript.clipboard = 'access'
 c.content.webgl = True
 c.content.pdfjs = True
 c.content.xss_auditing = False
 c.content.local_content_can_access_remote_urls = True
 c.content.plugins = True
-c.content.tls.certificate_errors = "ask-block-thirdparty"
+c.content.tls.certificate_errors = 'ask-block-thirdparty'
 c.content.geolocation = False
 
 
@@ -306,23 +286,23 @@ c.content.blocking.enabled = True
 #c.content.blocking.method = 'adblock'
 
 #c.content.blocking.adblock.lists = [
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/legacy.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2020.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2021.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2022.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2023.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2024.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/badware.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/privacy.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/badlists.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/annoyances.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/annoyances-cookies.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/annoyances-others.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/badlists.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/quick-fixes.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/resource-abuse.txt",
-#    "https://github.com/uBlockOrigin/uAssets/raw/master/filters/unbreak.txt"
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/legacy.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2020.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2021.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2022.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2023.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2024.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/badware.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/privacy.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/badlists.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/annoyances.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/annoyances-cookies.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/annoyances-others.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/badlists.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/quick-fixes.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/resource-abuse.txt',
+#    'https://github.com/uBlockOrigin/uAssets/raw/master/filters/unbreak.txt'
 #]
 
 
@@ -330,7 +310,6 @@ c.content.blocking.enabled = True
 
 config.bind('=', 'cmd-set-text -s :open')
 config.bind('h', 'history')
-#config.bind('cc', 'hint images spawn sh -c "cliphist link {hint-url}"')
 config.bind('cs', 'cmd-set-text -s :config-source')
 config.bind('th', 'config-cycle tabs.show multiple never')
 config.bind('sh', 'config-cycle statusbar.show always never')
@@ -338,22 +317,20 @@ config.bind('t', 'hint links tab')
 config.bind('pP', 'open -- {primary}')
 config.bind('pp', 'open -- {clipboard}')
 config.bind('pt', 'open -t -- {clipboard}')
-#config.bind('mr', 'macro-record')
-#config.bind('<ctrl-y>', 'spawn --userscript ytdl.sh')
+config.bind('mr', 'macro-record')
 config.bind('tt', 'config-cycle tabs.position top left')
 config.bind('gj', 'tab-move +')
 config.bind('gk', 'tab-move -')
 config.bind('gm', 'tab-move')
-config.bind('qc', 'config-cycle content.user_stylesheets ~/.config/qutebrowser/qutebrowser.css ""')
-#config.bind('<ctrl-h>', 'navigate prev')
-#config.bind('<ctrl-l>', 'navigate next')
-#config.bind('<ctrl-j>', 'navigate increment')
-#config.bind('<ctrl-k>', 'navigate decrement')
-config.bind('M', 'hint links spawn mpv'
+config.bind('<ctrl-h>', 'navigate prev')
+config.bind('<ctrl-l>', 'navigate next')
+config.bind('<ctrl-j>', 'navigate increment')
+config.bind('<ctrl-k>', 'navigate decrement')
+config.bind('mpv', 'hint links spawn mpv'
     +' --vo=gpu'
     +' --hwdec=vaapi'
-    +' --ytdl-format=\"bestvideo[height<=720]+bestaudio\"'
-    +' --audio-device=\"pulse/alsa_output.pci-0000_00_1f.3.analog-stereo\"'
+    +' --ytdl-format=\'bestvideo[height<=720]+bestaudio\''
+    +' --audio-device=\'pulse/alsa_output.pci-0000_00_1f.3.analog-stereo\''
     +' --script-opts=ytdl_hook-ytdl_path=yt-dlp'
-    +' \"{hint-url}\"')
+    +' \'{hint-url}\'')
 config.bind('.', 'download-cancel')

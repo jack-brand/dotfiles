@@ -8,6 +8,12 @@ else
     alias ls='ls -lA'
 fi
 
+if diff --color=auto /dev/null &>/dev/null; then
+    alias diff='diff -ud --color=always'
+else
+    alias diff='diff -ud'
+fi
+
 if command -v eza &>/dev/null; then
     alias ls="eza -al --no-user --changed --git"
     alias tree="eza --tree"

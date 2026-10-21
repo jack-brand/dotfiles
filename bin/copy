@@ -9,4 +9,6 @@ elif command -v xsel &>/dev/null; then
     xsel --clipboard --input
 elif command -v pbcopy &>/dev/null; then
     pbcopy
+else
+    printf 'ERROR: %s: No recognised clipboard utility.' "$0"
 fi
