@@ -37,7 +37,7 @@ Plug('romgrk/barbar.nvim')  -- bufferline
 Plug('nvim-treesitter/nvim-treesitter')  -- improved syntax
 Plug('mfussenegger/nvim-lint')  -- async linter
 Plug('nvim-tree/nvim-tree.lua')  -- file explorer
-Plug('windwp/nvim-autopairs')  -- autopairs 
+Plug('windwp/nvim-autopairs')  -- autopairs
 Plug('lewis6991/gitsigns.nvim')  -- git
 Plug('numToStr/Comment.nvim')  -- easier comments
 Plug('norcalli/nvim-colorizer.lua')  -- color highlight
@@ -46,7 +46,6 @@ Plug('numToStr/FTerm.nvim')  -- floating terminal
 Plug('ron-rs/ron.vim')  -- ron syntax highlighting
 Plug('MeanderingProgrammer/render-markdown.nvim')  -- render md inline
 Plug('emmanueltouzery/decisive.nvim')  -- view csv files
-Plug('folke/twilight.nvim')  -- surrounding dim
 
 vim.call('plug#end')
 
@@ -56,18 +55,25 @@ vim.call('plug#end')
 -- Current theme is saved for persistence on restart.
 -- Lualine theme is stored separately due to possible naming difference.
 
+local lualine_config
+
 local theme_file = vim.fn.stdpath('config') .. '/current_theme'
 
 _G.load_theme = function()
     local file = io.open(theme_file, 'r')
     if file then
-        vim.cmd('colorscheme ' .. file:read('*l'))
-        require('lualine').setup({ options = { theme = file:read('*l') } })
-    file:close() end
+        local colorscheme = file:read('*l')
+        local lualine_theme = file:read('*l')
+        file:close()
+        vim.cmd('colorscheme ' .. colorscheme)
+        local config = vim.deepcopy(lualine_config)
+        config.options.theme = lualine_theme
+        require('lualine').setup(config)
+    end
 end
 
 local themes = {
-    { 'gruber-darker', 'gruber-darker' },
+    { 'gruber-darker', 'auto' },
     { 'pywal16', 'pywal16-nvim' },
 }
 
@@ -75,15 +81,20 @@ local current_theme_index = 1
 
 _G.switch_theme = function()
     current_theme_index = current_theme_index % #themes + 1
-    local colorscheme, lualine = unpack(themes[current_theme_index])
+    local colorscheme, lualine_theme = unpack(themes[current_theme_index])
     vim.cmd('colorscheme ' .. colorscheme)
-    require('lualine').setup({ options = { theme = lualine } })
+    local config = vim.deepcopy(lualine_config)
+    config.options.theme = lualine_theme
+    require('lualine').setup(config)
     local file = io.open(theme_file, 'w')
-    if file then file:write(colorscheme .. '\n' .. lualine) file:close() end
+    if file then
+        file:write(colorscheme .. '\n' .. lualine_theme)
+        file:close()
+    end
 end
 
 
--- MAPPINGS
+-- MAPPINGS / KEYBINDS
 
 local function map(m, k, v)
     vim.keymap.set(m, k, v, { noremap = true, silent = true })
@@ -99,7 +110,6 @@ map('n', '<S-l>', ':bnext<CR>')
 map('n', '<S-h>', ':bprevious<CR>')
 map('n', '<leader>q', ':BufferClose<CR>')
 map('n', '<leader>Q', ':BufferClose!<CR>')
-map('n', '<leader>U', '::bufdo bd<CR>')  -- Close all
 map('n', '<AS-h>', '<Cmd>BufferMovePrevious<CR>')
 map('n', '<AS-l>', '<Cmd>BufferMoveNext<CR>')
 map('n', '<A-1>', '<Cmd>BufferGoto 1<CR>')
@@ -135,36 +145,35 @@ map('n', '<leader>g', ':lua require("fzf-lua").grep()<CR>')  -- grep
 map('n', '<leader>G', ':lua require("fzf-lua").grep_cword()<CR>')  -- grep word under cursor
 
 -- Plugins
-map('n', '<leader>p', switch_theme)  -- cycle theme
-map('n', '<leader>s', ':%s//g<Left><Left>')  -- replace all
-map('n', '<leader>t', ':NvimTreeToggle<CR>')  -- file explorer
-map('n', '<leader>P', ':PlugInstall<CR>')  -- vim-plug
+map('n', '<leader>p', switch_theme)
+map('n', '<leader>t', ':NvimTreeToggle<CR>')
+map('n', '<leader>gs', ':Gitsigns toggle_signs<CR>')
 map('n', '<leader>z', ':lua require("FTerm").open()<CR>')  -- floating terminal
 map('t', '<Esc>', '<C-\\><C-n><CMD>lua require("FTerm").close()<CR>')  -- exit and save fterm
-map('n', '<leader>l', ':Twilight<CR>')  -- dim surroundings
 
 -- Decisive csv
-map('n', '<leader>csa', ':lua require("decisive").align_csv({})<cr>')
-map('n', '<leader>csA', ':lua require("decisive").align_csv_clear({})<cr>')
-map('n', '[c', ':lua require("decisive").align_csv_prev_col()<cr>')
-map('n', ']c', ':lua require("decisive").align_csv_next_col()<cr>')
+map('n', '<leader>csa', ':lua require("decisive").align_csv({})<CR>')
+map('n', '<leader>csA', ':lua require("decisive").align_csv_clear({})<CR>')
+map('n', '[c', ':lua require("decisive").align_csv_prev_col()<CR>')
+map('n', ']c', ':lua require("decisive").align_csv_next_col()<CR>')
 
 -- Misc
+map('n', 'U', '<C-r>')  -- undo
 map('n', '<leader>w', ':w<CR>')  -- write
+map('n', '<leader>s', ':%s//g<Left><Left>')  -- replace all
 map('n', '<leader>x', '<cmd>!chmod +x %<CR>')  -- make file executable
 map('n', '<leader>mv', ':!mv % ')  -- move file
-map('n', '<leader>R', ':so %<CR>')  -- reload config
 map('n', '<leader>u', ':silent !xdg-open "<cWORD>" &<CR>')  -- open url
 map('v', '<leader>i', '=gv')  -- autoindent
 map('n', '<leader>W', ':set wrap!<CR>')  -- toggle wrap
 
 -- Toggle htop in terminal
-map('n', '<leader>H', function()
+map('n', '<leader>h', function()
     _G.htop:toggle()
 end)
 
 -- Run make
-map('n', '<leader>ma', function()
+map('n', '<leader>mk', function()
     local bufdir = vim.fn.expand('%:p:h')
     vim.cmd('lcd ' .. bufdir)
     vim.cmd('!sudo make uninstall && sudo make clean install %')
@@ -181,41 +190,51 @@ map('n', '<leader>nn', function()
 end)
 
 
-
 -- OPTIONS
 
-vim.opt['laststatus'] = 3
-vim.opt['ruler'] = false  -- disable extra numbering
-vim.opt['showmode'] = false  -- not needed due to lualine
-vim.opt['showcmd'] = false
-vim.opt['wrap'] = true
-vim.opt['mouse'] = 'a'  -- enable mouse
-vim.opt['clipboard'] = 'unnamedplus'  -- system clipboard
-vim.opt['history'] = 100
-vim.opt['swapfile'] = false
-vim.opt['backup'] = false
-vim.opt['undofile'] = true
-vim.opt['cursorline'] = true  -- highlight current line
-vim.opt['ttyfast'] = true  -- fast scrolling
---vim.opt['smoothscroll'] = true
-vim.opt['title'] = true -- window titlebar
-vim.opt['number'] = true
-vim.opt['relativenumber'] = true
-vim.opt['numberwidth'] = 4
-vim.opt['smarttab'] = true
-vim.opt['cindent'] = true
-vim.opt['autoindent'] = false
-vim.opt['tabstop'] = 4
---vim.opt['foldmethod'] = 'expr'
---vim.opt['foldlevel'] = 99  -- disable folding, lower numbers enable
---vim.opt['foldexpr'] = 'nvim_treesitter#foldexpr()'
-vim.opt['termguicolors'] = true
-vim.opt['ignorecase'] = true
-vim.opt['smartcase'] = true
-vim.opt['conceallevel'] = 2  -- markdown conceal
-vim.opt['concealcursor'] = 'nc'
-vim.opt['splitkeep'] = 'screen'  -- stabilise window open/close
-
+vim.opt.laststatus = 3
+vim.opt.ruler = false  -- disable extra numbering
+vim.opt.showmode = false  -- not needed due to lualine
+vim.opt.showcmd = false
+vim.opt.wrap = true
+vim.opt.mouse = 'a'  -- enable mouse
+vim.opt.clipboard = 'unnamedplus'  -- system clipboard
+vim.opt.history = 100
+vim.opt.swapfile = false
+vim.opt.backup = false
+vim.opt.undofile = true
+vim.opt.cursorline = true  -- highlight current line
+vim.opt.ttyfast = true  -- fast scrolling
+vim.opt.smoothscroll = true
+vim.opt.title = true -- window titlebar
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.numberwidth = 4
+vim.opt.smarttab = true
+vim.opt.cindent = true
+vim.opt.autoindent = false
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+--vim.opt.foldmethod = 'expr'
+--vim.opt.foldlevel = 99  -- disable folding, lower numbers enable
+--vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+vim.opt.termguicolors = true
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+vim.opt.conceallevel = 0
+vim.opt.concealcursor = 'nc'
+vim.opt.splitkeep = 'screen'  -- stabilise window open/close
+vim.opt.hlsearch = false
+vim.opt.incsearch = true
+vim.opt.list = true
+vim.opt.listchars = {
+	space = "·",
+	tab = "▸ ",
+	trail = "·",
+	nbsp = "␣",
+    extends = "›",
+	precedes = "‹",
+}
 vim.opt.shortmess:append('I')
 
 vim.diagnostic.config({
@@ -252,15 +271,13 @@ vim.api.nvim_create_autocmd('FileType', {
 
 -- Disable automatic comment on newline
 vim.api.nvim_create_autocmd('FileType', {
-    pattern = '*',
     callback = function()
-    vim.opt_local.formatoptions:remove({ 'c', 'r', 'o' })
+		vim.opt_local.formatoptions:remove({ 'c', 'r', 'o' })
     end,
 })
 
 -- Highlight text on yank
 vim.api.nvim_create_autocmd('TextYankPost', {
-    pattern = '*',
     callback = function()
     vim.highlight.on_yank({ timeout = 300 })
     end,
@@ -268,7 +285,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- Restore cursor position on file open
 vim.api.nvim_create_autocmd('BufReadPost', {
-    pattern = '*',
     callback = function()
         local line = vim.fn.line('"\"')
         if line > 1 and line <= vim.fn.line('$') then
@@ -284,29 +300,27 @@ vim.api.nvim_create_autocmd('VimEnter', {
     end,
 })
 
-vim.api.nvim_create_autocmd({ 'BufEnter', 'FocusGained', 'InsertLeave', 'CmdlineLeave', 'WinEnter' }, {
-   pattern = '*',
-   group = augroup,
-   callback = function()
-      if vim.o.nu and vim.api.nvim_get_mode().mode ~= 'i' then
-         vim.opt.relativenumber = true
-      end
-   end,
-})
-
-vim.api.nvim_create_autocmd({ 'BufLeave', 'FocusLost', 'InsertEnter', 'CmdlineEnter', 'WinLeave' }, {
-    pattern = '*',
+-- Turn off relative line numbering when in the command line
+vim.api.nvim_create_autocmd('CmdlineEnter', {
     group = augroup,
     callback = function()
         if vim.o.nu then
-            vim.opt.relativenumber = false
+            vim.wo.relativenumber = false
             -- Conditional from https://github.com/rockyzhang24/dotfiles/commit/03dd14b5d43f812661b88c4660c03d714132abcf
             -- Workaround for https://github.com/neovim/neovim/issues/32068
-            if not vim.tbl_contains({'@', '-'}, vim.v.event.cmdtype) then
+            if not vim.tbl_contains({ '@', '-' }, vim.v.event.cmdtype) then
                 vim.cmd 'redraw'
             end
         end
     end,
+})
+vim.api.nvim_create_autocmd('CmdlineLeave', {
+   group = augroup,
+   callback = function()
+      if vim.o.nu then
+         vim.wo.relativenumber = true
+      end
+   end,
 })
 
 
@@ -333,56 +347,55 @@ require('nvim-autopairs').setup({
 })
 
 
--- Bufferline
+-- Buffer tabs
 
 vim.g.barbar_auto_setup = false
 
 require('barbar').setup({
     animation = false,
-  
+
     -- Current/total tabpages indicator (top right corner)
     tabpages = true,
-  
-    -- A buffer to this direction will be focused (if it exists) when closing the current buffer.
-    -- Valid options are 'left' (the default), 'previous', and 'right'
+
+    -- Valid options are 'left' (default), 'previous', and 'right'
     focus_on_close = 'left',
-  
-    -- Hide inactive buffers and file extensions. Other options are `alternate`, `current`, and `visible`.
-    hide = {extensions = false, inactive = false},
-  
+
+    -- Hide inactive buffers and file extensions.
+    -- Other options are `alternate`, `current`, and `visible`.
+    hide = { extensions = false, inactive = false },
+
     icons = {
         buffer_index = false,
         buffer_number = false,
-        button = '',
+        button = '',
         diagnostics = {
-            [vim.diagnostic.severity.ERROR] = {enabled = true, icon = ' '},
+            [vim.diagnostic.severity.ERROR] = { enabled = false, icon = ' ' },
         },
+        filetype = { enabled = false },
         gitsigns = {
-            added = {enabled = true, icon = ' '},
-            changed = {enabled = true, icon = ' '},
-            deleted = {enabled = true, icon = ' '},
+            added = { enabled = false, icon = ' ' },
+            changed = { enabled = false, icon = ' ' },
+            deleted = { enabled = false, icon = ' ' },
         },
-        separator = {left = '▎', right = ''},
-  
-        -- If true, add an additional separator at the end of the buffer list
+        separator = { left = '▎', right = '' },
         separator_at_end = true,
-  
+
         -- Configure the icons on the bufferline when modified or pinned.
-        -- Supports all the base icon options.
-        modified = {button = '●'},
+        -- Supports all base icon options
+        modified = {},
         pinned = {button = '', filename = true},
-  
-        -- Configure the icons on the bufferline based on the visibility of a buffer.
-        -- Supports all the base icon options, plus `modified` and `pinned`.
-        alternate = {filetype = {enabled = false}},
-        current = {buffer_index = true},
-        inactive = {button = '×'},
-        visible = {modified = {buffer_number = false}},
+
+        -- Configure the icons on the bufferline based on buffer visibility.
+        -- Supports all base icon options, plus `modified` and `pinned`.
+        alternate = {},
+        current = {},
+        inactive = {},
+        visible = {},
     },
 
     -- Set the filetypes which barbar will offset itself for
     sidebar_filetypes = {
-        -- Use the default values {event = 'BufWinLeave', text = '', align = 'left'}
+        -- Use the default values { event = 'BufWinLeave', text = '', align = 'left' }
         NvimTree = true,
         -- Or, specify the text used for the offset
         undotree = {
@@ -390,11 +403,11 @@ require('barbar').setup({
             align = 'left',  -- optionally specify an alignment ('left' | 'center' | 'right')
         },
         -- Or, specify the event which the sidebar executes when leaving
-        ['neo-tree'] = {event = 'BufWipeout'},
+        ['neo-tree'] = { event = 'BufWipeout' },
         -- Or, specify all three
-        Outline = {event = 'BufWinLeave', text = 'symbols-outline', align = 'right'},
+        Outline = { event = 'BufWinLeave', text = 'symbols-outline', align = 'right' },
     },
-    maximum_length = 25,  -- Set the maximum buffer name length
+    maximum_length = 20,  -- max buffer name length
 })
 
 
@@ -564,7 +577,7 @@ require('gitsigns').setup({
         untracked    = { text = '┆' },
     },
     signs_staged_enable = true,
-    signcolumn = true,   -- Toggle with `:Gitsigns toggle_signs`
+    signcolumn = false,   -- Toggle with `:Gitsigns toggle_signs`
     numhl = false,  -- Toggle with `:Gitsigns toggle_numhl`
     linehl = false,  -- Toggle with `:Gitsigns toggle_linehl`
     word_diff = false,  -- Toggle with `:Gitsigns toggle_word_diff`
@@ -600,8 +613,6 @@ require('gitsigns').setup({
 
 -- Status line
 
-local lualine = require('lualine')
-
 local diagnostics = {
     'diagnostics',
     sources = { 'nvim_diagnostic' },
@@ -609,22 +620,9 @@ local diagnostics = {
     symbols = { error = ' ', warn = ' ' },
     colored = true,
     update_in_insert = false,
-    always_visible = true,
+    always_visible = false,
     cond = function()
         return vim.bo.filetype ~= 'markdown'
-    end,
-}
-
-local diff = {
-    'diff',
-    colored = true,
-    symbols = { added = ' ', modified = ' ', removed = ' ' },
-}
-
-local mode = {
-    'mode',
-    fmt = function(str)
-        return '-- ' .. str .. ' --'
     end,
 }
 
@@ -633,34 +631,25 @@ local branch = {
     icon = '',
 }
 
-local progress = function()
-    local current_line = vim.fn.line('.')
-    local total_lines = vim.fn.line('$')
-    local chars = { '', '', '' }  -- Adding more chars will still work
-    local line_ratio = current_line / total_lines
-    local index = math.ceil(line_ratio * #chars)
-    return chars[index] .. ' ' .. math.floor(line_ratio * 100) .. '%%'
-end
-
-lualine.setup({
+lualine_config = {
     options = {
         icons_enabled = true,
-        theme = 'auto',  -- Auto allows for theme switching
+        theme = 'auto',
         component_separators = { left = '', right = '' },
         section_separators = { left = '', right = '' },
         disabled_filetypes = { 'alpha', 'dashboard' },
         always_divide_middle = true,
     },
     sections = {
-        lualine_a = { branch },
-        lualine_b = { mode },
-        lualine_c = { diagnostics },
-        lualine_x = { diff, 'fileformat', 'filetype' },
-        lualine_y = { 'location' },
-        lualine_z = { progress },
+        lualine_a = { 'mode' },
+        lualine_b = { 'branch' },
+        lualine_c = { 'filename' },
+        lualine_x = { diagnostics, 'encoding', 'fileformat' },
+        lualine_y = { 'filetype' },
+        lualine_z = { function() return '%l:%v' end },
     },
     extensions = { 'nvim-tree' },
-})
+}
 
 -- Transparency override for old pywal; not needed with pywal16
 --vim.api.nvim_set_hl(0, 'lualine_c_normal', { bg = 'none' })
@@ -674,13 +663,13 @@ lualine.setup({
 
 -- Some linters must be installed with vim-plug
 require('lint').linters_by_ft = {
-    lua = {'luac'},
-    python = {'ruff'},
-    sh = {'bash'},
-    c = {'cppcheck'},
-    rust = {'clippy'},
-    css = {'stylelint'},
-    html = {'htmlhint'},
+    lua = { 'luac' },
+    python = { 'ruff' },
+    sh = { 'bash' },
+    c = { 'cppcheck' },
+    rust = { 'clippy' },
+    css = { 'stylelint' },
+    html = { 'htmlhint' },
 }
 
 -- Some linters require a file to be saved to disk, while others support stdin input.
@@ -877,28 +866,6 @@ vim.api.nvim_create_autocmd('FileType', {
         vim.treesitter.start()
         vim.bo.indentexpr = 'v:lua.require("nvim-treesitter").indentexpr()'
     end,
-})
-
-
--- Dim surroundings
-
-require('twilight').setup({
-    dimming = {
-        alpha = 0.3,
-        color = { 'Normal', '#ffffff' },  -- Attempt to get the foreground color from the highlight groups, otherwise use a fallback color
-        term_bg = '#000000',  -- If `guibg=none`, this is used to calculate text color
-        inactive = true,  -- Fully dim other windows, unless they contain the same buffer
-    },
-    context = 7,  -- Target number of lines to show around the current line
-    treesitter = true,  -- Use treesitter to automatically expand the visible text
-    -- Additional node types to always expand
-    expand = {
-        'function',
-        'method',
-        'table',
-        'if_statement',
-    },
-    exclude = {},
 })
 
 

@@ -62,6 +62,7 @@ button:hover {
 #memory,
 #disk,
 #network,
+#pulseaudio,
 #tray {
     padding: 0 8px;
     color: @white;
@@ -104,6 +105,11 @@ button:hover {
 
 #network.disconnected {
     color: @red;
+}
+
+#pulseaudio {
+	color: @white;
+	border-bottom: 4px solid @white;
 }
 
 #tray {

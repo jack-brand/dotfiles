@@ -46,7 +46,6 @@
         "separate-outputs": false
     },
     "tray": {
-        //"icon-size": 21,
         "spacing": 10
         //"icons": {
         //  "blueman": "bluetooth",
@@ -59,16 +58,18 @@
     },
     "cpu": {
         "format": "CPU: {usage}%",
+        "format-alt": "CPU: {avg_load}",
         "tooltip": false
     },
     "memory": {
-        "format": "RAM: {used} GiB"
+        "format": "RAM: {percentage}%",
+        "format-alt": "RAM: {used} GiB / {total} GiB"
     },
     "disk": {
         "interval": 60,
         "path": "/",
-        "format": "DISK: {free}",
-        "format-alt": "DISK: {used} / {free}"
+        "format": "DISK: {percentage_used}",
+        "format-alt": "DISK: {used} / {total}"
     },
     "battery": {
         "states": {
@@ -77,9 +78,9 @@
             "critical": 10
         },
         "format": "BAT: {capacity}% {icon} {time}",
-        "format-plugged": "{capacity}% ",
+        "format-plugged": "BAT: {capacity}% ",
         "format-alt": "BAT: {capacity}%",
-        "format-time": "{H}:{M}:{S}",
+        "format-time": "{H}:{M}",
         "format-icons": ["", "", "", "", ""]
     },
     "network": {
@@ -97,11 +98,11 @@
     },
     "pulseaudio": {
         "format": "{icon} {volume}%",
-        "format-muted": " muted",
+        "format-muted": " mut",
         "format-icons": {
-            "default": ["", "", ""]
+            "default": ["", "", "", ""]
         },
-        "on-click": "pwvucontrol",
+        "on-click": "pavucontrol-qt",
         "tooltip-format": "{desc}"
     }
 }

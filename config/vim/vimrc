@@ -350,7 +350,7 @@ set statusline+=\ %#StatusLine#
 set statusline+=%f
 set statusline+=%m
 set statusline+=%#StatusLineNC#
-set statusline+=%{b:git_branch==''?'':'\ \ '}
+set statusline+=%{b:git_branch==''?'':'\ \ \ '}
 set statusline+=%{b:git_branch}
 set statusline+=%=
 set statusline+=%#StatusLineNC#
