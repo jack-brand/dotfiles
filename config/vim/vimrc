@@ -3,13 +3,14 @@
 " License: MIT
 " Credit: <https://github.com/tonybanters/vim> <https://shapeshed.com/vim-statuslines/>
 
-" OPTIONS
+
+" Options
 
 set number
 set relativenumber
 set ignorecase
 set smartcase
-set clipboard=unnamed,unnamedplus
+set clipboard=unnamedplus
 set expandtab
 set shiftwidth=4
 set softtabstop=4
@@ -28,9 +29,6 @@ set nohlsearch
 set endofline
 set fixendofline
 set wrap
-set noswapfile
-set formatoptions-=o
-set formatoptions-=r
 set display+=lastline
 set list
 set listchars=space:·,tab:▸\ ,trail:·,nbsp:␣
@@ -50,7 +48,9 @@ let &t_EI = "\<Esc>[2 q"
 
 let g:tex_conceal = ''
 
-" PLUGINS
+set clipboard=unnamed,unnamedplus
+
+" Plugins
 
 let s:plugin_dir = (empty($XDG_DATA_HOME)
             \ ? expand('$HOME/.local/share')
@@ -64,11 +64,11 @@ function! s:clone(repo)
     let l:path = s:plugin_dir . '/' . fnamemodify(a:repo, ':t')
 
     if !isdirectory(l:path)
-        call system('git clone --depth=1 https://github.com/'
-                    \ . a:repo . ' ' . shellescape(l:path))
+        execute '!git clone --depth=1 https://github.com/'
+                \ . a:repo . ' ' . shellescape(l:path)
 
         if v:shell_error
-            echoerr 'ERROR: vimrc: Failed to clone ' . a:repo
+            echoerr 'ERROR: Failed to clone ' . a:repo
             return
         endif
     endif
@@ -90,12 +90,10 @@ function! PluginUpdate()
 
             echomsg 'INFO: PluginUpdate: Updating ' . l:plugin_name . '...'
 
-            let l:output = system('git -C ' . shellescape(l:path) . ' pull --ff-only')
+            execute '!git -C ' . shellescape(l:path) . ' pull --ff-only'
  
             if v:shell_error
                 echoerr 'ERROR: PluginUpdate: Failed to update ' . l:plugin_name
-            else
-                echomsg 'INFO: PluginUpdate: ' . substitute(l:output, '\n\+$', '', '')
             endif
         endif
     endfor
@@ -109,18 +107,17 @@ call s:clone('SilentGlasses/colorhighlighter')
 call s:clone('ThunderBoltCODMYT/gruber-darker.vim')
 call s:clone('yegappan/lsp')
 call s:clone('tpope/vim-commentary')
+
 call s:clone('iamcco/markdown-preview.nvim')
 
 if !isdirectory(s:plugin_dir . '/markdown-preview.nvim/app/bin')
     if executable('yarn')
-        let s:build_output = execute
-        \ '!cd ' . shellescape(s:plugin_dir . '/markdown-preview.nvim')
-        \ . ' && export NODE_OPTIONS=--openssl-legacy-provider'
-        \ . ' && yarn install && yarn build'
+        execute '!cd ' . shellescape(s:plugin_dir . '/markdown-preview.nvim')
+                    \ . ' && export NODE_OPTIONS=--openssl-legacy-provider'
+                    \ . ' && yarn install && yarn build'
 
         if v:shell_error
             echoerr 'ERROR: Failed to build markdown-preview.nvim'
-            echomsg s:build_output
         endif
     else
         echohl WarningMsg
@@ -129,15 +126,13 @@ if !isdirectory(s:plugin_dir . '/markdown-preview.nvim/app/bin')
     endif
 endif
 
-" THEME
+" Colours
 
 set termguicolors
 colorscheme gruber-darker
-let g:gruber_transparent_bg = 1
-let g:gruber_bold_keywords = 1
-let g:gruber_italic_comments = 1
 
-" LSP
+
+" Lsp
 
 " Languages
 " cf. https://langserver.org/
@@ -237,7 +232,7 @@ let s:lsp_opts = #{
 autocmd User LspSetup call LspOptionsSet(s:lsp_opts)
 
 
-" FUNCTIONS
+" Functions
 
 function! TrimWhitespace()
     let l:save = winsaveview()
@@ -261,7 +256,8 @@ function! SearchReplace()
     execute '%s/' . escape(l:search, '/') . '/' . escape(l:replace, '/') . '/gc'
 endfunction
 
-" KEYBINDS
+
+" Keybinds
 
 let mapleader = " "
 
@@ -293,7 +289,8 @@ nnoremap <leader>nd :LspDiag next \| LspDiag current<CR>
 nnoremap <leader>pd :LspDiag prev \| LspDiag current<CR>
 inoremap <silent> <C-Space> <C-x><C-o>
 
-" GIT
+
+" Git branch
 
 let b:git_branch = ''
 
@@ -306,7 +303,8 @@ augroup git_branch
     autocmd BufEnter,BufWritePost,FocusGained * call UpdateGitBranch()
 augroup END
 
-" STATUS LINE
+
+" Status line
 
 function! CurrentMode() abort
     let l:mode = mode(1)
@@ -349,12 +347,12 @@ set statusline+=%#StatusLineMode#
 set statusline+=\ %{CurrentMode()}
 set statusline+=\ %#StatusLineModeArrow#
 set statusline+=%{nr2char(0xe0b0)}
-set statusline+=%#StatusLineNC#
-set statusline+=\ %{b:git_branch}
-set statusline+=%{b:git_branch!=''?'\ ':''}
-set statusline+=%#StatusLine#
+set statusline+=\ %#StatusLine#
 set statusline+=%f
 set statusline+=%m
+set statusline+=%#StatusLineNC#
+set statusline+=%{b:git_branch==''?'':'\ \ '}
+set statusline+=%{b:git_branch}
 set statusline+=%=
 set statusline+=%#StatusLineNC#
 set statusline+=%{&filetype}

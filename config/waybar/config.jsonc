@@ -25,6 +25,8 @@
         "custom/sep",
         "network",
         "custom/sep",
+        "pulseaudio",
+        "custom/sep",
         "clock",
         "custom/sep",
         "tray"
@@ -87,10 +89,19 @@
     "custom/gpu": {
         "format": "{text}",
         "exec": "gpu-usage-waybar --interval 3000 --text-format \"GPU: {gpu_utilization}%  VRAM: {mem_utilization}%\"",
-        "return-type": "json",
+        "return-type": "json"
     },
     "custom/sep": {
         "format": " ",
         "interval": 0
+    },
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": " muted",
+        "format-icons": {
+            "default": ["", "", ""]
+        },
+        "on-click": "pwvucontrol",
+        "tooltip-format": "{desc}"
     }
 }
