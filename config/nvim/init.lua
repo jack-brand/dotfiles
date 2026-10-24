@@ -28,14 +28,13 @@ local Plug = vim.fn['plug#']
 
 vim.call('plug#begin')
 
-Plug('ThunderBoltCODYMT/gruber-darker.vim', { ['as'] = 'gruber-darker' })  -- colorscheme
+Plug('blazkowolf/gruber-darker.nvim')  -- colorscheme
 Plug('uZer/pywal16.nvim', { ['as'] = 'pywal16' })  -- pywal colorscheme
 Plug('nvim-lualine/lualine.nvim')  -- statusline
 Plug('nvim-tree/nvim-web-devicons')  -- pretty icons
 Plug('folke/which-key.nvim')  -- mappings popup
 Plug('romgrk/barbar.nvim')  -- bufferline
-Plug('goolord/alpha-nvim')  -- pretty startup
-Plug('nvim-treesitter/nvim-treesitter', { ['do'] = ':TSUpdate' })  -- improved syntax
+Plug('nvim-treesitter/nvim-treesitter')  -- improved syntax
 Plug('mfussenegger/nvim-lint')  -- async linter
 Plug('nvim-tree/nvim-tree.lua')  -- file explorer
 Plug('windwp/nvim-autopairs')  -- autopairs 
@@ -57,7 +56,7 @@ vim.call('plug#end')
 -- Current theme is saved for persistence on restart.
 -- Lualine theme is stored separately due to possible naming difference.
 
-local theme_file = vim.fn.stdpath('config') .. 'current_theme'
+local theme_file = vim.fn.stdpath('config') .. '/current_theme'
 
 _G.load_theme = function()
     local file = io.open(theme_file, 'r')
@@ -198,7 +197,7 @@ vim.opt['backup'] = false
 vim.opt['undofile'] = true
 vim.opt['cursorline'] = true  -- highlight current line
 vim.opt['ttyfast'] = true  -- fast scrolling
-vim.opt['smoothscroll'] = true
+--vim.opt['smoothscroll'] = true
 vim.opt['title'] = true -- window titlebar
 vim.opt['number'] = true
 vim.opt['relativenumber'] = true
@@ -207,15 +206,17 @@ vim.opt['smarttab'] = true
 vim.opt['cindent'] = true
 vim.opt['autoindent'] = false
 vim.opt['tabstop'] = 4
-vim.opt['foldmethod'] = 'expr'
-vim.opt['foldlevel'] = 99  -- disable folding, lower numbers enable
-vim.opt['foldexpr'] = 'nvim_treesitter#foldexpr()'
+--vim.opt['foldmethod'] = 'expr'
+--vim.opt['foldlevel'] = 99  -- disable folding, lower numbers enable
+--vim.opt['foldexpr'] = 'nvim_treesitter#foldexpr()'
 vim.opt['termguicolors'] = true
 vim.opt['ignorecase'] = true
 vim.opt['smartcase'] = true
 vim.opt['conceallevel'] = 2  -- markdown conceal
 vim.opt['concealcursor'] = 'nc'
 vim.opt['splitkeep'] = 'screen'  -- stabilise window open/close
+
+vim.opt.shortmess:append('I')
 
 vim.diagnostic.config({
     signs = false,
@@ -251,10 +252,10 @@ vim.api.nvim_create_autocmd('FileType', {
 
 -- Disable automatic comment on newline
 vim.api.nvim_create_autocmd('FileType', {
-        pattern = '*',
-        callback = function()
-        vim.opt_local.formatoptions:remove({ 'c', 'r', 'o' })
-        end,
+    pattern = '*',
+    callback = function()
+    vim.opt_local.formatoptions:remove({ 'c', 'r', 'o' })
+    end,
 })
 
 -- Highlight text on yank
@@ -280,19 +281,6 @@ vim.api.nvim_create_autocmd('VimEnter', {
     callback = function()
         local startuptime = vim.fn.reltimefloat(vim.fn.reltime(vim.g.start_time))
         vim.g.startup_time_ms = string.format('%.2f ms', startuptime * 1000)
-    end,
-})
-
-vim.api.nvim_create_augroup('alpha_on_empty', { clear = true })
-vim.api.nvim_create_autocmd('User', {
-    pattern = 'BDeletePre *',
-    group = 'alpha_on_empty',
-    callback = function()
-        local bufnr = vim.api.nvim_get_current_buf()
-        local name = vim.api.nvim_buf_get_name(bufnr)
-        if name == '' then
-          vim.cmd([[:Alpha | bd#]])
-        end
     end,
 })
 
@@ -323,34 +311,6 @@ vim.api.nvim_create_autocmd({ 'BufLeave', 'FocusLost', 'InsertEnter', 'CmdlineEn
 
 
 -- PLUGINS
-
--- Welcome screen
-
-local alpha = require('alpha')
-local dashboard = require('alpha.themes.dashboard')
-
-dashboard.section.header.val = {
-    [[ 𖠑  ˚ ݁˖ ₊. 𓂃 ]]
-}
-
-dashboard.section.buttons.val = {
-    dashboard.button('e', '  New file', ':ene <BAR> startinsert <CR>'),
-    dashboard.button('f', '󰍉  Find file', ':lua require("fzf-lua").files() <CR>'),
-    dashboard.button('t', '  Browse cwd', ':NvimTreeOpen<CR>'),
-    dashboard.button('r', '  Browse src', ':e ~/.local/src/<CR>'),
-    dashboard.button('c', '  Config', ':e ~/.config/nvim/<CR>'),
-    dashboard.button('p', '  Plugins', ':PlugInstall<CR>'),
-    dashboard.button('q', '󰅙  Quit', ':q!<CR>'),
-}
-
-dashboard.section.footer.val = function()
-    return vim.g.startup_time_ms or '[[  ]]'
-end
-
-dashboard.section.buttons.opts.hl = 'Keyword'
-dashboard.opts.opts.noautocmd = true
-alpha.setup(dashboard.opts)
-
 
 -- Autopairs
 
@@ -455,11 +415,20 @@ require('colorizer').setup({ '*' }, {
 -- Colorschemes
 
 require('gruber-darker').setup({
-    transparent_background = true,
-    styles = {
-        sidebars = 'transparent',
-        floats = 'transparent',
+    bold = true,
+    invert = {
+        signs = false,
+        tabline = false,
+        visual = false,
     },
+    italic = {
+        strings = false,
+        comments = true,
+        operators = false,
+        folds = true,
+    },
+    undercurl = true,
+    underline = true,
 })
 
 

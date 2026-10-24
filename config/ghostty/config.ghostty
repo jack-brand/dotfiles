@@ -22,3 +22,5 @@ keybind = super+l=new_split:right
 keybind = super+k=new_split:up
 keybind = super+j=new_split:down
 
+keybind = super+[=previous_tab
+keybind = super+]=next_tab

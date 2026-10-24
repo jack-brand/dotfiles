@@ -3,14 +3,13 @@
 " License: MIT
 " Credit: <https://github.com/tonybanters/vim> <https://shapeshed.com/vim-statuslines/>
 
-
-" Options
+" OPTIONS
 
 set number
 set relativenumber
 set ignorecase
 set smartcase
-set clipboard=unnamedplus
+set clipboard=unnamed,unnamedplus
 set expandtab
 set shiftwidth=4
 set softtabstop=4
@@ -29,6 +28,9 @@ set nohlsearch
 set endofline
 set fixendofline
 set wrap
+set noswapfile
+set formatoptions-=o
+set formatoptions-=r
 set display+=lastline
 set list
 set listchars=space:·,tab:▸\ ,trail:·,nbsp:␣
@@ -48,9 +50,7 @@ let &t_EI = "\<Esc>[2 q"
 
 let g:tex_conceal = ''
 
-set clipboard=unnamed,unnamedplus
-
-" Plugins
+" PLUGINS
 
 let s:plugin_dir = (empty($XDG_DATA_HOME)
             \ ? expand('$HOME/.local/share')
@@ -109,15 +109,14 @@ call s:clone('SilentGlasses/colorhighlighter')
 call s:clone('ThunderBoltCODMYT/gruber-darker.vim')
 call s:clone('yegappan/lsp')
 call s:clone('tpope/vim-commentary')
-
 call s:clone('iamcco/markdown-preview.nvim')
 
 if !isdirectory(s:plugin_dir . '/markdown-preview.nvim/app/bin')
     if executable('yarn')
         let s:build_output = execute
-                    \ '!cd ' . shellescape(s:plugin_dir . '/markdown-preview.nvim')
-                    \ . ' && export NODE_OPTIONS=--openssl-legacy-provider'
-                    \ . ' && yarn install && yarn build'
+        \ '!cd ' . shellescape(s:plugin_dir . '/markdown-preview.nvim')
+        \ . ' && export NODE_OPTIONS=--openssl-legacy-provider'
+        \ . ' && yarn install && yarn build'
 
         if v:shell_error
             echoerr 'ERROR: Failed to build markdown-preview.nvim'
@@ -130,13 +129,15 @@ if !isdirectory(s:plugin_dir . '/markdown-preview.nvim/app/bin')
     endif
 endif
 
-" Colours
+" THEME
 
 set termguicolors
 colorscheme gruber-darker
+let g:gruber_transparent_bg = 1
+let g:gruber_bold_keywords = 1
+let g:gruber_italic_comments = 1
 
-
-" Lsp
+" LSP
 
 " Languages
 " cf. https://langserver.org/
@@ -236,7 +237,7 @@ let s:lsp_opts = #{
 autocmd User LspSetup call LspOptionsSet(s:lsp_opts)
 
 
-" Functions
+" FUNCTIONS
 
 function! TrimWhitespace()
     let l:save = winsaveview()
@@ -260,8 +261,7 @@ function! SearchReplace()
     execute '%s/' . escape(l:search, '/') . '/' . escape(l:replace, '/') . '/gc'
 endfunction
 
-
-" Keybinds
+" KEYBINDS
 
 let mapleader = " "
 
@@ -293,8 +293,7 @@ nnoremap <leader>nd :LspDiag next \| LspDiag current<CR>
 nnoremap <leader>pd :LspDiag prev \| LspDiag current<CR>
 inoremap <silent> <C-Space> <C-x><C-o>
 
-
-" Git branch
+" GIT
 
 let b:git_branch = ''
 
@@ -307,8 +306,7 @@ augroup git_branch
     autocmd BufEnter,BufWritePost,FocusGained * call UpdateGitBranch()
 augroup END
 
-
-" Status line
+" STATUS LINE
 
 function! CurrentMode() abort
     let l:mode = mode(1)
