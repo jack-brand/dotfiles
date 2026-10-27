@@ -247,12 +247,11 @@ vim.api.nvim_create_autocmd('BufEnter', {
 })
 
 -- Lint when file is written to
+-- `try_lint` without arguments runs the linters defined in `linters_by_ft` for the current filetype on write
 vim.api.nvim_create_autocmd('BufWritePost', {
-  callback = function()
-	-- try_lint without arguments runs the linters defined in `linters_by_ft`
-	-- for the current filetype, on write
-	require('lint').try_lint()
-  end,
+	callback = function()
+		require('lint').try_lint()
+	end,
 })
 
 -- Markdown spellcheck
@@ -285,6 +284,7 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 	end,
 })
 
+-- Startup time
 vim.api.nvim_create_autocmd('VimEnter', {
 	callback = function()
 		local startuptime = vim.fn.reltimefloat(vim.fn.reltime(vim.g.start_time))
@@ -307,12 +307,19 @@ vim.api.nvim_create_autocmd('CmdlineEnter', {
 	end,
 })
 vim.api.nvim_create_autocmd('CmdlineLeave', {
-   group = augroup,
-   callback = function()
-	  if vim.o.nu then
-		 vim.wo.relativenumber = true
-	  end
-   end,
+	group = augroup,
+	callback = function()
+		if vim.o.nu then
+			vim.wo.relativenumber = true
+		end
+	end,
+})
+
+-- Turn off cursor line background highlighting
+vim.api.nvim_create_autocmd('ColorScheme', {
+	callback = function()
+		vim.api.nvim_set_hl(0, 'CursorLine', { bg = 'NONE' })
+	end,
 })
 
 
@@ -417,7 +424,7 @@ require('colorizer').setup({ '*' }, {
 })
 
 
--- Colorschemes
+-- Colorscheme
 
 require('gruber-darker').setup({
 	bold = true,
@@ -872,5 +879,6 @@ whichkey.add({
 	{ '<leader>mk', desc = 'make' },
 	{ '<leader>gs', desc = 'toggle git signs' }
 })
+
 
 load_theme()
