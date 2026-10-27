@@ -4,105 +4,107 @@
 // Credit: tony <https://github.com/tonybanters/waybar>
 
 {
-    "layer": "top", 
-    "position": "top", 
-    "spacing": 4, 
+	"layer": "top", 
+	"position": "top", 
+	"spacing": 4, 
 
-    "modules-left": [
-        "ext/workspaces"
-    ],
-    "modules-center": [
-        "ext/window"
-    ],
-    "modules-right": [
-        "cpu",
-        "custom/sep",
-        "memory",
-        "custom/sep",
-        "custom/gpu",
-        "custom/sep",
-        "disk",
-        "custom/sep",
-        "network",
-        "custom/sep",
-        "pulseaudio",
-        "custom/sep",
-        "clock",
-        "custom/sep",
-        "tray"
-    ],
+	"modules-left": [
+		"ext/workspaces"
+	],
+	"modules-center": [
+		"ext/window"
+	],
+	"modules-right": [
+		"cpu",
+		"custom/sep",
+		"memory",
+		"custom/sep",
+		"custom/gpu",
+		"custom/sep",
+		"disk",
+		"custom/sep",
+		"network",
+		"custom/sep",
+		"pulseaudio",
+		"custom/sep",
+		"clock",
+		"custom/sep",
+		"tray"
+	],
 
-    "ext/workspaces": {
-        "disable-scroll": true,
-        "all-outputs": true,
-        "warp-on-scroll": false,
-        "format": "{name}",
-        "persistent-workspaces": {
-            "*" : 9
-        }
-    },
-    "ext/window" : {
-        "max-length": 40,
-        "separate-outputs": false
-    },
-    "tray": {
-        "spacing": 10
-        //"icons": {
-        //  "blueman": "bluetooth",
-        //}
-    },
-    "clock": {
-        "format": "{:%H:%M:%S}",
-        "format-alt": "{:%d %b %Y}",
-        "interval": 1
-    },
-    "cpu": {
-        "format": "CPU: {usage}%",
-        "format-alt": "CPU: {avg_load}",
-        "tooltip": false
-    },
-    "memory": {
-        "format": "RAM: {percentage}%",
-        "format-alt": "RAM: {used} GiB / {total} GiB"
-    },
-    "disk": {
-        "interval": 60,
-        "path": "/",
-        "format": "DISK: {percentage_used}",
-        "format-alt": "DISK: {used} / {total}"
-    },
-    "battery": {
-        "states": {
-            "good": 80,
-            "warning": 30,
-            "critical": 10
-        },
-        "format": "BAT: {capacity}% {icon} {time}",
-        "format-plugged": "BAT: {capacity}% ",
-        "format-alt": "BAT: {capacity}%",
-        "format-time": "{H}:{M}",
-        "format-icons": ["", "", "", "", ""]
-    },
-    "network": {
-        "format": "NET: On",
-        "format-disconnected": "NET: Off"
-    },
-    "custom/gpu": {
-        "format": "{text}",
-        "exec": "gpu-usage-waybar --interval 3000 --text-format \"GPU: {gpu_utilization}%  VRAM: {mem_utilization}%\"",
-        "return-type": "json"
-    },
-    "custom/sep": {
-        "format": " ",
-        "interval": 0
-    },
-    "pulseaudio": {
-        "format": "{icon} {volume}%",
-        "format-muted": " mut",
-        "format-icons": {
-            "default": ["", "", "", ""]
-        },
-        "on-click": "pavucontrol-qt",
-        "tooltip-format": "{desc}"
-    }
+	"ext/workspaces": {
+		"disable-scroll": true,
+		"all-outputs": true,
+		"warp-on-scroll": false,
+		"format": "{name}",
+		"persistent-workspaces": {
+			"*" : 9
+		}
+	},
+	"ext/window" : {
+		"max-length": 40,
+		"separate-outputs": false
+	},
+	"tray": {
+		"spacing": 10
+		//"icons": {
+		//  "blueman": "bluetooth",
+		//}
+	},
+	"clock": {
+		"format": "{:%H:%M:%S}",
+		"format-alt": "{:%d %b %Y}",
+		"interval": 1
+	},
+	"cpu": {
+		"format": " {usage}%",
+		"format-alt": " {load}",
+		"tooltip": false
+	},
+	"memory": {
+		"format": " {percentage}%",
+		"format-alt": " {used} GiB / {total} GiB"
+	},
+	"disk": {
+		"interval": 60,
+		"path": "/",
+		"format": " {percentage_used}%",
+		"format-alt": " {used} / {total}"
+	},
+	"battery": {
+		"states": {
+			"good": 80,
+			"warning": 30,
+			"critical": 10
+		},
+		"format": "{icon} {capacity}%",
+		"format-plugged": "{icon} {capacity}% ",
+		"format-alt": "{icon} {time}",
+		"format-time": "{H}:{M}",
+		"format-icons": ["", "", "", "", ""]
+	},
+	"network": {
+		"format": "{icon}",
+		"format-alt": "{icon} {essid}",
+		"format-disconnected": "󰤮",
+		"format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"]
+	},
+	"custom/gpu": {
+		"format": "{text}",
+		"exec": "gpu-usage-waybar --interval 3000 --text-format \"󰾲 {gpu_utilization}% | {mem_utilization}%\"",
+		"return-type": "json"
+	},
+	"custom/sep": {
+		"format": " ",
+		"interval": 0
+	},
+	"pulseaudio": {
+		"format": "{icon} {volume}%",
+		"format-muted": " mut",
+		"format-icons": {
+			"default": ["", "", "", ""]
+		},
+		"on-click": "pavucontrol-qt",
+		"tooltip-format": "{desc}"
+	}
 }

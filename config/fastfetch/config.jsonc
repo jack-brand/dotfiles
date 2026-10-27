@@ -34,7 +34,7 @@
             "type": "gpu",
             "key": "├󰾲 gpu",
             "keyColor": "red",
-            "format": "{name} {dedicated-used} / {dedicated-total} ({dedicated-percentage-num}%) {temperature}",
+            "format": "{name} {dedicated-used} / {dedicated-total} ({dedicated-percentage-num}) {temperature}",
             "temp": true,
             "driverSpecific": true
         },
