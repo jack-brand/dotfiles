@@ -112,10 +112,6 @@ button:hover {
 	border-bottom: 4px solid @white;
 }
 
-#tray {
-	background-color: #2980b9;
-}
-
 #custom-sep {
 	color: @brightblack; 
 }

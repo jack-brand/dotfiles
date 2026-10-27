@@ -135,6 +135,13 @@ mkdir -p "$GITHUB_DIR"
 replace "$SCRIPT_DIR/config/gh/config.yml" \
     "$GITHUB_DIR/config.yml"
 
+# Spotatui
+
+SPOTATUI_DIR="$XDG_CONFIG_HOME/spotatui"
+mkdir -p "$SPOTATUI_DIR"
+
+printf 'behavior:\n  enable_global_song_count: true' > "$SPOTATUI_DIR/config.yml"
+
 # Other
 
 for path in "$SCRIPT_DIR/config"/*; do
