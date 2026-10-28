@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-grim -l 0 -g "$(slurp)" - | wl-copy
+pics_dir="${XDG_PICTURES_DIR:-$HOME/pictures}"
+mkdir -p "$pics_dir"
+path="$pics_dir/screenshot_$(date +%Y%m%d_%H%M%S).png"
 
+grim -l 0 -g "$(slurp)" "$path"
