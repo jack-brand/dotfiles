@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
 # This script symlinks config files to `~/` and `~/.config/`.
-# To update the config files, simply execute `git pull` in 
-# this SCRIPT_DIR.
+# To update the config files, simply execute `git pull` in
+# this REPO_DIR.
 
 # Author: Jack Brand <74jdvb@gmail.com> <https://github.com/jack-brand>
 # Credit: Dave Eddy <dave@daveeddy.com> <https://github.com/bahamas10/dotfiles>
 
 set -euo pipefail
 
-SCRIPT_NAME="${0##*/}"
+THIS_SCRIPT_NAME="${0##*/}"
 
 YES=false
 while (($#)); do
@@ -17,21 +17,21 @@ while (($#)); do
         "-y"|"--yes")
             YES=true
             ;;
-        "--i-am-jack")
+        "--jack")
             JACK=true
             ;;
         *)
             printf '%s: Unknown option: %s\n' \
-                "$SCRIPT_NAME" "$1" >&2
+                "$THIS_SCRIPT_NAME" "$1" >&2
             exit 1
             ;;
     esac
     shift
 done
 
-SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
+REPO_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
 
-git -C "$SCRIPT_DIR" submodule update --init --recursive --remote
+git -C "$REPO_DIR" submodule update --init --recursive --remote
 
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 mkdir -p "$XDG_CONFIG_HOME"
@@ -70,7 +70,7 @@ replace() {
 # Git
 
 if $JACK; then
-    replace "$SCRIPT_DIR/config/git/gitconfig" "$HOME/.gitconfig"
+    replace "$REPO_DIR/config/git/gitconfig" "$HOME/.gitconfig"
 fi
 
 # Bash
@@ -79,7 +79,7 @@ manually_symlinked+=('bash')
 
 BASH_DIR="$XDG_CONFIG_HOME/bash"
 
-replace "$SCRIPT_DIR/config/bash" "$BASH_DIR"
+replace "$REPO_DIR/config/bash" "$BASH_DIR"
 
 for name in 'bashrc' 'bash_profile'; do
     if [[ -f "$HOME/.$name" ]]; then
@@ -95,7 +95,7 @@ manually_symlinked+=('zsh')
 
 ZSH_DIR="$XDG_CONFIG_HOME/zsh"
 
-replace "$SCRIPT_DIR/config/zsh" "$ZSH_DIR"
+replace "$REPO_DIR/config/zsh" "$ZSH_DIR"
 
 for name in 'zshrc' 'zprofile' 'zshenv'; do
     if [[ -f "$HOME/.$name" ]]; then
@@ -132,7 +132,7 @@ manually_symlinked+=('gh')
 GITHUB_DIR="$XDG_CONFIG_HOME/gh"
 mkdir -p "$GITHUB_DIR"
 
-replace "$SCRIPT_DIR/config/gh/config.yml" \
+replace "$REPO_DIR/config/gh/config.yml" \
     "$GITHUB_DIR/config.yml"
 
 # Spotatui
@@ -144,7 +144,7 @@ printf 'behavior:\n  enable_global_song_count: true' > "$SPOTATUI_DIR/config.yml
 
 # Other
 
-for path in "$SCRIPT_DIR/config"/*; do
+for path in "$REPO_DIR/config"/*; do
     name="${path##*/}"
 
     for excluded in "${manually_symlinked[@]}"; do
@@ -154,14 +154,18 @@ for path in "$SCRIPT_DIR/config"/*; do
     done
 
     replace "$path" "$XDG_CONFIG_HOME/$name"
+
+	if [[ "$name" == 'bat' ]] && command -v bat >/dev/null 2>&1; then
+		bat cache --build
+	fi
 done
 
 # Bin
 
-for script_path in "$SCRIPT_DIR/bin"/*; do
-    name="${script_path##*/}"
+for repo_path in "$REPO_DIR/bin"/*; do
+    name="${repo_path##*/}"
     path="$HOME/.local/bin/$name"
-    replace "$script_path" "$path"
+    replace "$repo_path" "$path"
     chmod +x "$path"
 done
 
@@ -174,19 +178,30 @@ else
 fi
 mkdir -p "$PICS_DIR"
 
-replace "$SCRIPT_DIR/wallpapers" "$PICS_DIR/wallpapers" 
+replace "$REPO_DIR/wallpapers" "$PICS_DIR/wallpapers"
+
+# Themes
+
+THEME_DIR="$XDG_DATA_HOME/themes"
+mkdir -p "$THEME_DIR"
+
+for repo_path in "$REPO_DIR/themes"/*; do
+	name="${repo_path##*/}"
+	path="$THEME_DIR/$name"
+	replace "$repo_path" "$path"
+done
 
 # MacOS
 
 if [[ "$(uname)" == "Darwin" ]]; then
-    MAC_SCRIPT_DIR="$SCRIPT_DIR/mac"
+    MAC_REPO_DIR="$REPO_DIR/mac"
 
     KEYBIND_DIR="$HOME/Library/KeyBindings"
     mkdir -p "$KEYBIND_DIR"
-    replace "$MAC_SCRIPT_DIR/DefaultKeyBindings.dict" \
+    replace "$MAC_REPO_DIR/DefaultKeyBindings.dict" \
         "$KEYBIND_DIR/DefaultKeyBindings.dict"
 
-    "$BASH" "$MAC_SCRIPT_DIR/mac_defaults.sh"
+    "$BASH" "$MAC_REPO_DIR/mac_defaults.sh"
 fi
 
 true
