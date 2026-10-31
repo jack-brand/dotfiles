@@ -38,6 +38,12 @@ set listchars=space:·,tab:▸\ ,trail:·,nbsp:␣
 filetype plugin indent on
 syntax on
 
+augroup FileTypeIndentation
+	autocmd!
+	autocmd FileType javascript,typescript,css
+				\ setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+augroup END
+
 " Normal, visual, command line: block
 " Insert, command line insert: vertical
 " Replace, command line replace: horizontal

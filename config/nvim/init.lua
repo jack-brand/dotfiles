@@ -43,8 +43,8 @@ Plug('numToStr/Comment.nvim')  -- easier comments
 Plug('norcalli/nvim-colorizer.lua')  -- color highlight
 Plug('ibhagwan/fzf-lua')  -- fuzzy finder and grep
 Plug('ron-rs/ron.vim')  -- ron syntax highlighting
-Plug('MeanderingProgrammer/render-markdown.nvim')  -- render md inline
 Plug('emmanueltouzery/decisive.nvim')  -- view csv files
+Plug('nvim-mini/mini.align') -- align text
 
 vim.call('plug#end')
 
@@ -95,9 +95,17 @@ end
 
 -- MAPPINGS / KEYBINDS
 
-local function map(m, k, v)
-	vim.keymap.set(m, k, v, { noremap = true, silent = true })
+local function map(mode, key, val, desc)
+	vim.keymap.set(mode, key, val, { desc = desc, noremap = true, silent = true })
 end
+
+local function trim_whitespace()
+	local view = vim.fn.winsaveview()
+	vim.cmd([[keeppatterns %s/\s\+$//e]])
+	vim.fn.winrestview(view)
+end
+
+vim.api.nvim_create_user_command("TrimWhitespace", trim_whitespace, {})
 
 -- Leader
 map('', '<Space>', '<Nop>')
@@ -107,8 +115,8 @@ vim.g.maplocalleader = ' '
 -- Buffers
 map('n', '<S-l>', ':bnext<CR>')
 map('n', '<S-h>', ':bprevious<CR>')
-map('n', '<leader>q', ':BufferClose<CR>')
-map('n', '<leader>Q', ':BufferClose!<CR>')
+map('n', '<leader>q', ':BufferClose<CR>', 'Close buffer')
+map('n', '<leader>Q', ':BufferClose!<CR>', 'Force close buffer')
 map('n', '<AS-h>', '<Cmd>BufferMovePrevious<CR>')
 map('n', '<AS-l>', '<Cmd>BufferMoveNext<CR>')
 map('n', '<A-1>', '<Cmd>BufferGoto 1<CR>')
@@ -134,42 +142,48 @@ map('n', '<F7>', ':vertical resize +2<CR>')
 map('n', '<F8>', ':vertical resize -2<CR>')
 
 -- Fzf
-map('n', '<leader>f', ':lua require("fzf-lua").files()<CR>')  -- search cwd
-map('n', '<leader>Fh', ':lua require("fzf-lua").files({ cwd = "~/" })<CR>')  -- search ~
-map('n', '<leader>Fc', ':lua require("fzf-lua").files({ cwd = "~/.config" })<CR>')  -- search ~/.config
-map('n', '<leader>Fl', ':lua require("fzf-lua").files({ cwd = "~/.local/src" })<CR>')  -- search ~/.local/src
-map('n', '<leader>Ff', ':lua require("fzf-lua").files({ cwd = ".." })<CR>')  -- search parent dir
-map('n', '<leader>Fr', ':lua require("fzf-lua").resume()<CR>')  -- resume last search
-map('n', '<leader>g', ':lua require("fzf-lua").grep()<CR>')  -- grep
-map('n', '<leader>G', ':lua require("fzf-lua").grep_cword()<CR>')  -- grep word under cursor
+map('n', '<leader>f', ':lua require("fzf-lua").files()<CR>', 'Fuzzy find')
+map('n', '<leader>Fh', ':lua require("fzf-lua").files({ cwd = "~/" })<CR>', 'Fuzzy find home')
+map('n', '<leader>Fc', ':lua require("fzf-lua").files({ cwd = "~/.config" })<CR>', 'Fuzzy find config')
+map('n', '<leader>Fp', ':lua require("fzf-lua").files({ cwd = ".." })<CR>', 'Fuzzy find parent')
+map('n', '<leader>Fr', ':lua require("fzf-lua").resume()<CR>', 'Fuzzy find last search')
+map('n', '<leader>g', ':lua require("fzf-lua").grep()<CR>', 'Grep')
+map('n', '<leader>G', ':lua require("fzf-lua").grep_cword()<CR>', 'Grep under cursor')
 
--- Plugins
-map('n', '<leader>p', switch_theme)
-map('n', '<leader>t', ':NvimTreeToggle<CR>')
-map('n', '<leader>gs', ':Gitsigns toggle_signs<CR>')
+-- Csv
+map('n', '<leader>ca', ':lua require("decisive").align_csv({})<CR>', 'Align csv')
+map('n', '<leader>cA', ':lua require("decisive").align_csv_clear({})<CR>', 'Unalign csv')
+map('n', '[c', ':lua require("decisive").align_csv_prev_col()<CR>', 'Csv previous column')
+map('n', ']c', ':lua require("decisive").align_csv_next_col()<CR>', 'Csv next column')
 
--- Decisive csv
-map('n', '<leader>csa', ':lua require("decisive").align_csv({})<CR>')
-map('n', '<leader>csA', ':lua require("decisive").align_csv_clear({})<CR>')
-map('n', '[c', ':lua require("decisive").align_csv_prev_col()<CR>')
-map('n', ']c', ':lua require("decisive").align_csv_next_col()<CR>')
+-- Other plugins
+map('n', '<leader>t', ':NvimTreeToggle<CR>', 'Toggle file tree')
+map('n', '<leader>o', ':Gitsigns toggle_signs<CR>', 'Toggle git signs')
 
 -- Misc
-map('n', 'U', '<C-r>')  -- undo
-map('n', '<leader>w', ':w<CR>')  -- write
-map('n', '<leader>s', ':%s//g<Left><Left>')  -- replace all
-map('n', '<leader>x', '<cmd>!chmod +x %<CR>')  -- make file executable
-map('n', '<leader>mv', ':!mv % ')  -- move file
-map('n', '<leader>u', ':silent !xdg-open "<cWORD>" &<CR>')  -- open url
-map('v', '<leader>i', '=gv')  -- autoindent
-map('n', '<leader>W', ':set wrap!<CR>')  -- toggle wrap
+map('n', '<leader>p', switch_theme, 'Switch theme')
+map('n', 'U', '<C-r>', 'Redo')
+map('n', '<leader>w', ':w<CR>', 'Write')
+map('n', '<leader>s', ':%s//g<Left><Left>', 'Replace all')
+map('n', '<leader>r', ':%s//gc<Left><Left><Left>', 'Replace all interactive')
+map('n', '<leader>x', '<cmd>!chmod +x %<CR>', 'Make file exectuable')
+map('n', '<leader>m', ':!mv % ', 'Move file')
+map('n', '<leader>u', 'gx', 'Open link')
+map('v', '<leader>i', '=gv', 'Auto-indent')
+map('n', '<leader>W', ':set wrap!<CR>', 'Toggle line wrap')
+
+-- Diagnostics
+map('n', '<leader>d', vim.diagnostic.open_float, 'Diagnostic')
+map('n', '[d', vim.diagnostic.goto_prev, 'Previous diagnostic')
+map('n', ']d', vim.diagnostic.goto_next, 'Next diagnostic')
+map('n', '<leader>l', vim.diagnostic.setloclist, 'Diagnostic list')
 
 -- Run make
-map('n', '<leader>mk', function()
+map('n', '<leader>k', function()
 	local bufdir = vim.fn.expand('%:p:h')
 	vim.cmd('lcd ' .. bufdir)
-	vim.cmd('!sudo make uninstall && sudo make clean install %')
-end)
+	vim.cmd('!make %')
+end, 'Compile file')
 
 -- Toggle relative vs absolute line numbers
 map('n', '<leader>n', function()
@@ -179,7 +193,7 @@ map('n', '<leader>n', function()
 	else
 		vim.wo.relativenumber = true
 	end
-end)
+end, 'Toggle relative line nums')
 
 
 -- OPTIONS
@@ -206,7 +220,9 @@ vim.opt.smarttab = true
 vim.opt.cindent = true
 vim.opt.autoindent = false
 vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
+vim.opt.expandtab = false
 --vim.opt.foldmethod = 'expr'
 --vim.opt.foldlevel = 99  -- disable folding, lower numbers enable
 --vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
@@ -238,11 +254,10 @@ vim.diagnostic.config({
 
 -- Close nvim-tree if it's the last buffer open
 vim.api.nvim_create_autocmd('BufEnter', {
-	pattern = '*',
 	callback = function()
 		if #vim.api.nvim_list_bufs() == 1 and vim.bo.filetype == 'NvimTree' then
-	vim.cmd('quit')
-	end
+			vim.cmd('quit')
+		end
 	end,
 })
 
@@ -252,12 +267,6 @@ vim.api.nvim_create_autocmd('BufWritePost', {
 	callback = function()
 		require('lint').try_lint()
 	end,
-})
-
--- Markdown spellcheck
-vim.api.nvim_create_autocmd('FileType', {
-	pattern = 'markdown',
-	command = 'setlocal spell wrap',
 })
 
 -- Disable automatic comment on newline
@@ -292,7 +301,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
 	end,
 })
 
--- Turn off relative line numbering when in the command line
+-- Turn off relative line numbers when in the command line
 vim.api.nvim_create_autocmd('CmdlineEnter', {
 	group = augroup,
 	callback = function()
@@ -319,6 +328,17 @@ vim.api.nvim_create_autocmd('CmdlineLeave', {
 vim.api.nvim_create_autocmd('ColorScheme', {
 	callback = function()
 		vim.api.nvim_set_hl(0, 'CursorLine', { bg = 'NONE' })
+	end,
+})
+
+-- Configure whitespace for specific file types
+vim.api.nvim_create_autocmd('FileType', {
+	pattern = { 'javascript', 'typescript', 'css'},
+	callback = function()
+		vim.opt_local.tabstop = 2
+		vim.opt_local.softtabstop = 2
+		vim.opt_local.shiftwidth = 2
+		vim.opt_local.expandtab = true
 	end,
 })
 
@@ -483,9 +503,9 @@ require('Comment').setup({
 		-- Extra mapping; `gco`, `gcO`, `gcA`
 		extra = true,
 	},
-	-- Function to call before (un)comment
+	-- Function to call before comment toggle
 	pre_hook = nil,
-	-- Function to call after (un)comment
+	-- Function to call after comment toggle
 	post_hook = nil,
 })
 
@@ -506,41 +526,41 @@ require('fzf-lua').setup({
 	keymap = {
 		builtin = {
 			-- neovim `:tmap` mappings for the fzf window
-			['<M-Esc>']	 = 'hide',  -- `:FzfLua resume` to continue
-			['<F1>']		= 'toggle-help',
-			['<F2>']		= 'toggle-fullscreen',
+			['<M-Esc>']     = 'hide',  -- `:FzfLua resume` to continue
+			['<F1>']        = 'toggle-help',
+			['<F2>']        = 'toggle-fullscreen',
 			-- Only valid with the 'builtin' previewer
-			['<F3>']		= 'toggle-preview-wrap',
-			['<F4>']		= 'toggle-preview',
+			['<F3>']        = 'toggle-preview-wrap',
+			['<F4>']        = 'toggle-preview',
 			-- Rotate preview clockwise/counter-clockwise
-			['<F5>']		= 'toggle-preview-ccw',
-			['<F6>']		= 'toggle-preview-cw',
+			['<F5>']        = 'toggle-preview-ccw',
+			['<F6>']        = 'toggle-preview-cw',
 			-- `ts-ctx` binds require `nvim-treesitter-context`
-			['<F7>']		= 'toggle-preview-ts-ctx',
-			['<F8>']		= 'preview-ts-ctx-dec',
-			['<F9>']		= 'preview-ts-ctx-inc',
-			['<S-Left>']	= 'preview-reset',
-			['<S-down>']	= 'preview-page-down',
-			['<S-up>']	  = 'preview-page-up',
+			['<F7>']        = 'toggle-preview-ts-ctx',
+			['<F8>']        = 'preview-ts-ctx-dec',
+			['<F9>']        = 'preview-ts-ctx-inc',
+			['<S-Left>']    = 'preview-reset',
+			['<S-down>']    = 'preview-page-down',
+			['<S-up>']      = 'preview-page-up',
 			['<M-S-down>']  = 'preview-down',
-			['<M-S-up>']	= 'preview-up',
+			['<M-S-up>']    = 'preview-up',
 		},
 		fzf = {
 			-- fzf '--bind=' options
-			['ctrl-z']	  = 'abort',
-			['ctrl-u']	  = 'unix-line-discard',
-			['ctrl-f']	  = 'half-page-down',
-			['ctrl-b']	  = 'half-page-up',
-			['ctrl-a']	  = 'beginning-of-line',
-			['ctrl-e']	  = 'end-of-line',
-			['alt-a']	   = 'toggle-all',
-			['alt-g']	   = 'first',
-			['alt-G']	   = 'last',
+			['ctrl-z']      = 'abort',
+			['ctrl-u']      = 'unix-line-discard',
+			['ctrl-f']      = 'half-page-down',
+			['ctrl-b']      = 'half-page-up',
+			['ctrl-a']      = 'beginning-of-line',
+			['ctrl-e']      = 'end-of-line',
+			['alt-a']       = 'toggle-all',
+			['alt-g']       = 'first',
+			['alt-G']       = 'last',
 			-- Only valid with fzf previewers (bat/cat/git/etc)
-			['f3']		  = 'toggle-preview-wrap',
-			['f4']		  = 'toggle-preview',
+			['f3']          = 'toggle-preview-wrap',
+			['f4']          = 'toggle-preview',
 			['shift-down']  = 'preview-page-down',
-			['shift-up']	= 'preview-page-up',
+			['shift-up']    = 'preview-page-up',
 		},
 	},
 })
@@ -550,20 +570,20 @@ require('fzf-lua').setup({
 
 require('gitsigns').setup({
 	signs = {
-		add		  = { text = '┃' },
-		change	   = { text = '┃' },
-		delete	   = { text = '_' },
-		topdelete	= { text = '‾' },
+		add          = { text = '┃' },
+		change       = { text = '┃' },
+		delete       = { text = '_' },
+		topdelete    = { text = '‾' },
 		changedelete = { text = '~' },
-		untracked	= { text = '┆' },
+		untracked    = { text = '┆' },
 	},
 	signs_staged = {
-		add		  = { text = '┃' },
-		change	   = { text = '┃' },
-		delete	   = { text = '_' },
-		topdelete	= { text = '‾' },
+		add          = { text = '┃' },
+		change       = { text = '┃' },
+		delete       = { text = '_' },
+		topdelete    = { text = '‾' },
 		changedelete = { text = '~' },
-		untracked	= { text = '┆' },
+		untracked    = { text = '┆' },
 	},
 	signs_staged_enable = true,
 	signcolumn = false,   -- Toggle with `:Gitsigns toggle_signs`
@@ -701,143 +721,6 @@ require('nvim-tree').setup({
 vim.g.nvim_tree_respect_buf_cwd = 1
 
 
--- Markdown rendering
-
-require('render-markdown').setup({
-	link = {
-		enabled = true,
-		-- Additional modes to render links
-		render_modes = false,
-		-- FYI: Footnote links start with '^'
-		footnote = {
-			enabled = true,
-			superscript = true,
-			prefix = '',
-			suffix = '',
-		},
-		-- Inlined with 'image' elements
-		image = '󰥶 ',
-		-- Inlined with 'email_autolink' elements
-		email = '󰀓 ',
-		-- Fallback icon for 'inline_link' and 'uri_autolink' elements
-		hyperlink = '󰌹 ',
-		-- Applies to the inlined icon as a fallback
-		highlight = 'RenderMarkdownLink',
-		-- Applies to WikiLink elements
-		wiki = {
-			icon = '󱗖 ',
-			body = function()
-				return nil
-			end,
-			highlight = 'RenderMarkdownWikiLink',
-		},
-		-- Define custom destination patterns so icons can quickly inform you of what a link
-		-- contains. Applies to 'inline_link', 'uri_autolink', and wikilink nodes. When multiple
-		-- patterns match a link the one with the longer pattern is used.
-		-- The key is for healthcheck and to allow users to change its values, value type below.
-		-- | pattern   | matched against the destination text							|
-		-- | icon	  | gets inlined before the link text							   |
-		-- | kind	  | optional determines how pattern is checked					  |
-		-- |		   | pattern | @see :h lua-patterns, is the default if not set	   |
-		-- |		   | suffix  | @see :h vim.endswith()								|
-		-- | priority  | optional used when multiple match, uses pattern length if empty |
-		-- | highlight | optional highlight for 'icon', uses fallback highlight if empty |
-		custom = {
-			web = { pattern = '^http', icon = '󰖟 ' },
-			github = { pattern = 'github%.com', icon = '󰊤 ' },
-			gitlab = { pattern = 'gitlab%.com', icon = '󰮠 ' },
-			stackoverflow = { pattern = 'stackoverflow%.com', icon = '󰓌 ' },
-			wikipedia = { pattern = 'wikipedia%.org', icon = '󰖬 ' },
-			youtube = { pattern = 'youtube%.com', icon = '󰗃 ' },
-		},
-	},
-	callout = {
-		-- Callouts are a special instance of a 'block_quote' that start with a 'shortcut_link'.
-		-- The key is for healthcheck and to allow users to change its values, value type below.
-		-- | raw		| matched against the raw text of a 'shortcut_link', case insensitive |
-		-- | rendered   | replaces the 'raw' value when rendering							 |
-		-- | highlight  | highlight for the 'rendered' text and quote markers				 |
-		-- | quote_icon | optional override for quote.icon value for individual callout	   |
-		-- | category   | optional metadata useful for filtering							  |
-		note	  = { raw = '[!NOTE]',	  rendered = '󰋽 Note',	  highlight = 'RenderMarkdownInfo'},
-		tip	   = { raw = '[!TIP]',	   rendered = '󰌶 Tip',	   highlight = 'RenderMarkdownSuccess'},
-		important = { raw = '[!IMPORTANT]', rendered = '󰅾 Important', highlight = 'RenderMarkdownHint'},
-		warning   = { raw = '[!WARNING]',   rendered = '󰀪 Warning',   highlight = 'RenderMarkdownWarn'},
-		caution   = { raw = '[!CAUTION]',   rendered = '󰳦 Caution',   highlight = 'RenderMarkdownError'},
-		abstract  = { raw = '[!ABSTRACT]',  rendered = '󰨸 Abstract',  highlight = 'RenderMarkdownInfo'},
-		summary   = { raw = '[!SUMMARY]',   rendered = '󰨸 Summary',   highlight = 'RenderMarkdownInfo'},
-		tldr	  = { raw = '[!TLDR]',	  rendered = '󰨸 Tldr',	  highlight = 'RenderMarkdownInfo'},
-		info	  = { raw = '[!INFO]',	  rendered = '󰋽 Info',	  highlight = 'RenderMarkdownInfo'},
-		todo	  = { raw = '[!TODO]',	  rendered = '󰗡 Todo',	  highlight = 'RenderMarkdownInfo'},
-		hint	  = { raw = '[!HINT]',	  rendered = '󰌶 Hint',	  highlight = 'RenderMarkdownSuccess'},
-		success   = { raw = '[!SUCCESS]',   rendered = '󰄬 Success',   highlight = 'RenderMarkdownSuccess'},
-		check	 = { raw = '[!CHECK]',	 rendered = '󰄬 Check',	 highlight = 'RenderMarkdownSuccess'},
-		done	  = { raw = '[!DONE]',	  rendered = '󰄬 Done',	  highlight = 'RenderMarkdownSuccess'},
-		question  = { raw = '[!QUESTION]',  rendered = '󰘥 Question',  highlight = 'RenderMarkdownWarn'},
-		help	  = { raw = '[!HELP]',	  rendered = '󰘥 Help',	  highlight = 'RenderMarkdownWarn'},
-		faq	   = { raw = '[!FAQ]',	   rendered = '󰘥 Faq',	   highlight = 'RenderMarkdownWarn'},
-		attention = { raw = '[!ATTENTION]', rendered = '󰀪 Attention', highlight = 'RenderMarkdownWarn'},
-		failure   = { raw = '[!FAILURE]',   rendered = '󰅖 Failure',   highlight = 'RenderMarkdownError'},
-		fail	  = { raw = '[!FAIL]',	  rendered = '󰅖 Fail',	  highlight = 'RenderMarkdownError'},
-		missing   = { raw = '[!MISSING]',   rendered = '󰅖 Missing',   highlight = 'RenderMarkdownError'},
-		danger	= { raw = '[!DANGER]',	rendered = '󱐌 Danger',	highlight = 'RenderMarkdownError'},
-		error	 = { raw = '[!ERROR]',	 rendered = '󱐌 Error',	 highlight = 'RenderMarkdownError'},
-		bug	   = { raw = '[!BUG]',	   rendered = '󰨰 Bug',	   highlight = 'RenderMarkdownError'},
-		example   = { raw = '[!EXAMPLE]',   rendered = '󰉹 Example',   highlight = 'RenderMarkdownHint' },
-		quote	 = { raw = '[!QUOTE]',	 rendered = '󱆨 Quote',	 highlight = 'RenderMarkdownQuote'},
-		cite	  = { raw = '[!CITE]',	  rendered = '󱆨 Cite',	  highlight = 'RenderMarkdownQuote'},
-	},
-	checkbox = {
-		enabled = true,
-		render_modes = false,
-		bullet = false,
-		right_pad = 1,
-		unchecked = {
-			icon = '󰄱 ',
-			highlight = 'RenderMarkdownUnchecked',
-			scope_highlight = nil,
-		},
-		checked = {
-			icon = '󰱒 ',
-			highlight = 'RenderMarkdownChecked',
-			scope_highlight = nil,
-		},
-		custom = {
-			todo = { raw = '[-]', rendered = '󰥔 ', highlight = 'RenderMarkdownTodo', scope_highlight = nil },
-		},
-	},
-	bullet = {
-		enabled = true,
-		render_modes = false,
-		icons = { '●', '○', '◆', '◇' },
-		ordered_icons = function(ctx)
-			local value = vim.trim(ctx.value)
-			local index = tonumber(value:sub(1, #value - 1))
-			return ('%d.'):format(index > 1 and index or ctx.index)
-		end,
-		left_pad = 0,
-		right_pad = 0,
-		highlight = 'RenderMarkdownBullet',
-		scope_highlight = {},
-	},
-	quote = { icon = '▋' },
-	anti_conceal = {
-		enabled = true,
-		-- Which elements to always show, ignoring anti conceal behavior. Values can either be
-		-- booleans to fix the behavior or string lists representing modes where anti conceal
-		-- behavior will be ignored. The possible elements are:
-		--   head_icon, head_background, head_border, code_language, code_background, code_border,
-		--   dash, bullet, check_icon, check_scope, quote, table_border, callout, link, sign
-		ignore = {
-			code_background = true,
-			sign = true,
-		},
-		above = 0,
-		below = 0,
-	},
-})
-
-
 -- Treesitter
 
 local treesitter = require('nvim-treesitter')
@@ -860,25 +743,15 @@ vim.api.nvim_create_autocmd('FileType', {
 
 -- Keymap popup
 
-local whichkey = require('which-key')
-whichkey.add({
-	{ '<leader>p', desc = 'toggle theme' },
-	{ '<leader>u', desc = 'open url' },
-	{ '<leader>f', desc = 'fzf' },
-	{ '<leader>g', desc = 'grep' },
-	{ '<leader>G', desc = 'grep under cursor' },
-	{ '<leader>x', desc = 'chmod +x' },
-	{ '<leader>t', desc = 'view files' },
-	{ '<leader>w', desc = 'write' },
-	{ '<leader>W', desc = 'toggle wrap' },
-	{ '<leader>q', desc = 'close buf' },
-	{ '<leader>Q', desc = 'close buf!' },
-	{ '<leader>n', desc = 'toggle relative nums' },
-	{ '<leader>F', desc = 'fzf opts' },
-	{ '<leader>mv', desc = 'move file' },
-	{ '<leader>mk', desc = 'make' },
-	{ '<leader>gs', desc = 'toggle git signs' }
+require('which-key').add({
+	{ '<leader>F', group = 'Fuzzy find' },
+	{ '<leader>c', group = 'Csv' },
 })
+
+
+-- Align text
+
+require('mini.align').setup()
 
 
 load_theme()
